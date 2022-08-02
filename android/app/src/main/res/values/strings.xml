@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">button-quest</string>
+    <string name="title_activity_main">button-quest</string>
+    <string name="package_name">us.cvbn.buttonquest</string>
+    <string name="custom_url_scheme">us.cvbn.buttonquest</string>
+</resources>
