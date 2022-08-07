@@ -51,4 +51,4 @@ RUN ln -sf $ANDROID_HOME/ndk/$NDK_VER $ANDROID_HOME/ndk-bundle
 #     && apt-get -y install --no-install-recommends <your-package-list-here>
 
 # [Optional] Uncomment this line to install global node packages.
-RUN su vscode -c "source /usr/local/share/nvm/nvm.sh && npm install -g @angular/cli" 2>&1
+RUN su vscode -c "source /usr/local/share/nvm/nvm.sh && npm install -g @angular/cli @iconic/cli" 2>&1

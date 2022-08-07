@@ -1,0 +1,4 @@
+<app-player-health [player]="player"></app-player-health>
+
+Experience {{ player.experience}}
+<app-progress-bar [value]="player.experience || 0" [max]="player.nextLevelExperience || 100" [min]="player.baseLevelExperience || 0"></app-progress-bar>

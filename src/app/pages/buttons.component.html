@@ -1,0 +1,12 @@
+<ion-content>
+    <div class="ion-padding has-header">
+        <ng-container *ngIf="activePlayer$ | async as ap">
+            <ng-container *ngIf="enemy$ | async as enmy">
+                <app-enemy [enemy]="enmy"></app-enemy>
+            </ng-container>
+
+            <app-player [player]="ap"></app-player>
+            <ion-button expand="block" (click)="fight();">Fight</ion-button>
+        </ng-container>
+    </div>
+</ion-content>

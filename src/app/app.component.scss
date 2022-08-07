@@ -1,0 +1,9 @@
+ion-progress-bar::part(progress) {
+
+}
+ion-progress-bar {
+    height: 2em;
+}
+ion-progress-bar::part(track) {
+    height: 1.5em;
+}

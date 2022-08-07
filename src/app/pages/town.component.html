@@ -1,0 +1,10 @@
+<ion-content>
+    <div class="ion-padding has-header">
+        <ng-container *ngIf="activePlayer">
+            Player health {{ activePlayer.health }}
+            <app-progress-bar [value]="activePlayer.health || 0" [max]="activePlayer.fullHealth || 100" [min]="0"></app-progress-bar>
+        </ng-container>
+
+        <ion-button expand="block" (click)="rest();">Rest</ion-button>
+    </div>
+</ion-content>

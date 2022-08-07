@@ -1,0 +1,69 @@
+//
+// Progress bars
+// --------------------------------------------------
+$line-height-computed: 30px !default;
+$progress-bg: #f5f5f5 !default;
+$border-radius-base: 4px;
+$font-size-small: 16px;
+$progress-bar-color: #fff !default;
+$progress-bar-bg: #428bca;
+$gray-light: #777;
+
+
+@mixin transition($transition) {
+    -webkit-transition: $transition;
+    -o-transition: $transition;
+    transition: $transition;
+}
+
+:host {
+    
+    display: block;
+    position: relative;
+    overflow: hidden;
+    height: $line-height-computed;
+    margin-bottom: $line-height-computed;
+    background-color: $progress-bg;
+    border-radius: $border-radius-base;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,.1);
+}
+
+// Bar of progress
+.progress-bar {
+    float: left;
+    width: 0%;
+    height: 100%;
+    font-size: $font-size-small;
+    line-height: $line-height-computed;
+    color: $progress-bar-color;
+    //text-align: center;
+    background-color: #555;
+    box-shadow: inset 0 -1px 0 rgba(0,0,0,.15);
+    @include transition(width .6s ease);
+}
+
+.progress-bar-text {
+    position: absolute;
+    top: 0;
+    font-weight: bold;
+    left: 2em;
+    right: 0;
+    bottom: 0;
+    height: 200%;
+}
+
+// Account for lower percentages
+.progress-bar {
+    &[aria-valuenow="1"],
+    &[aria-valuenow="2"] {
+        min-width: 30px;
+    }
+
+    &[aria-valuenow="0"] {
+        color: $gray-light;
+        min-width: 30px;
+        background-color: transparent;
+        background-image: none;
+        box-shadow: none;
+    }
+}
