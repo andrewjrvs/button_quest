@@ -14,6 +14,8 @@ export class GameMecService {
 
   private _pendingEnemy = new ReplaySubject<Enemy>(1);
   public pendingEnemy$ = this._pendingEnemy.asObservable();
+  private _gameMessage = new Subject<[string, string?, string?]>();
+  public gameMessage$ = this._gameMessage.asObservable();
 
   constructor() { }
 
@@ -34,5 +36,10 @@ export class GameMecService {
 
   public getCoin(): bigint {
     return this._user.getValue().coin;
+  }
+
+  public sendGameMessage(msg: string, icon?: string, header?: string): void {
+    //this._gameMessage.next([...arguments] as [string, string?, string?]);
+    this._gameMessage.next([msg, icon, header]);
   }
 }

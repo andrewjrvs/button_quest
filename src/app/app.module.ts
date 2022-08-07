@@ -19,6 +19,9 @@ import { PlayerComponent } from './parts/player.component';
 import { PlayerHealthComponent } from './parts/player-health.component';
 import { CoinDisplayPipe } from './coin-display.pipe';
 import { GameMecService } from './game-mec.service';
+import { AppStoreService } from './app-store.service';
+import { DebugComponent } from './debug/debug.component';
+
 
 @NgModule({
   declarations: [
@@ -31,6 +34,7 @@ import { GameMecService } from './game-mec.service';
     PlayerComponent,
     PlayerHealthComponent,
     CoinDisplayPipe,
+    DebugComponent,
   ],
   imports: [
     BrowserModule,
@@ -49,7 +53,8 @@ import { GameMecService } from './game-mec.service';
     , EnemyFactoryService
     , ItemFactoryService
     , GameMecService
+    , AppStoreService
   ],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {}

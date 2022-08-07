@@ -13,12 +13,13 @@ export class PlayerLibraryService {
   private _activePlayerIdx = new BehaviorSubject<number>(0);
 
   public list$ = this._playerList.asObservable();
+  public playerIndex$ = this._activePlayerIdx.asObservable();
   public activePlayer$ = this._activePlayerIdx.pipe(
     combineLatestWith(this._playerList),
     map(([idx, playerList]) => {
       if (playerList.length < 1 ||
           idx > (playerList.length - 1)) {
-        return null;
+        return undefined;
       } 
       return playerList[idx];
     })
@@ -62,5 +63,8 @@ export class PlayerLibraryService {
     this._playerList.next(arr);
   }
 
+  public setActivePlayer(idx: number): void {
+    this._activePlayerIdx.next(idx);
+  }
   
 }

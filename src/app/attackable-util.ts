@@ -17,5 +17,5 @@ export function getEarnedExperience(thing2: Defendable): number {
 }
 
 export function getEarnedCoin(thing2: Defendable): bigint {
-    return BigInt(thing2.fullHealth);
+    return BigInt(thing2.fullHealth * 2);
 }
