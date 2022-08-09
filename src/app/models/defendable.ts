@@ -1,6 +1,9 @@
+import { Attachable } from "./attachable";
+
 export interface Defendable{
-    status: number;
-    health: number;
-    baseDefence: number;
-    fullHealth: number;
+    /** Attachments we can use to agument the defence */
+    attached: Attachable[]
+
+    /** base defence number */
+    defence: number;
 }

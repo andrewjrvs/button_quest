@@ -1,2 +1,7 @@
 Player health {{ player.health }}
-<app-progress-bar [value]="player.health || 0" [max]="player.fullHealth || 100" [min]="0"></app-progress-bar>
+<div class="health-display-wrapper">
+    <div><ion-icon name="heart"></ion-icon></div>
+    <div>
+        <app-progress-bar [value]="player.health || 0" [max]="player.fullHealth || 100" [min]="0"></app-progress-bar>
+    </div>
+</div>

@@ -1,0 +1,8 @@
+Enemy health {{ enemy.health }}
+<div class="enemy-display-wrapper">
+    <app-display-icon [enemy]="enemy"></app-display-icon>
+    <div class="stats-wrapper">
+
+        <app-progress-bar [value]="enemy.health || 0" [max]="enemy.fullHealth || 100" [min]="0"></app-progress-bar>
+    </div>
+</div>

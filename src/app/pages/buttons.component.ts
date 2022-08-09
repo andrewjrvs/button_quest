@@ -4,15 +4,15 @@ import { Subject, combineLatest, zip, Subscription } from 'rxjs';
 import {
   filter, map, tap,
   withLatestFrom, combineLatestWith, startWith,
-  shareReplay
+  shareReplay, take
 
 } from 'rxjs/operators'
 import { attack, getEarnedCoin, getEarnedExperience, isDefendableDead } from '../attackable-util';
 import { EnemyFactoryService } from '../enemy-factory.service';
-import { GameMecService } from '../game-mec.service';
+import { GameMecService } from '../game-mechanics.service';
 import { Defendable } from '../models/defendable';
 import { Enemy } from '../models/emeny';
-import { Player } from '../models/player';
+import { Player } from '../models/hero';
 import { PlayerLibraryService } from '../player-library.service';
 import { enhancePlayerWithItems, findLevelFromExperience, getExpBaseForLevel, levelUpPlayer } from '../player-util';
 
@@ -45,7 +45,7 @@ export class ButtonsComponent implements OnInit, OnDestroy {
 
     , filter(([e, _]) => !!e)
     , map(([e, _]) => e)
-    , filter(e => !isDefendableDead(e))
+    , filter(e => !isDefendableDead(e as any))
   );
 
   public activePlayer?: Player;
@@ -63,9 +63,17 @@ export class ButtonsComponent implements OnInit, OnDestroy {
   ionViewDidLeave() {
     this.unsubscribe.forEach(fn => fn.unsubscribe()); 
     // this.activePlayer = undefined;
+
+    // this will clear out the enemy when we leave...
+    this.gameMec.clearEnemy();
   }
 
   ionViewWillEnter() {
+    // on first entery we need to generate an enemy
+    this.plyLibSrv.activePlayer$.pipe(take(1)).subscribe(ap => {
+      this.gameMec.updateEnemy(this.enemyFactory.getNew(ap?.level || 1))
+    });
+
     this.unsubscribe.push(
       this._fight.pipe(
         withLatestFrom(this.activePlayer$, this.enemy$),
@@ -94,20 +102,22 @@ export class ButtonsComponent implements OnInit, OnDestroy {
     this._fight.next(null);
   }
 
-  private __struggle([_, plr, e]: [null, Player | undefined, Enemy]) {
+  private __struggle([_, plr, e]: [null, Player | undefined, Enemy | undefined]) {
     let nplr = enhancePlayerWithItems({ ...plr } as Player);
     const nEnm = attack(nplr, { ...e } as Enemy) as Enemy;
 
+
+
     if (isDefendableDead(nEnm)) {
-      const expIncrease = getEarnedExperience(e);
-      const coinIncrease = getEarnedCoin(e);
+      const expIncrease = getEarnedExperience(nEnm);
+      const coinIncrease = getEarnedCoin(nEnm);
       nplr.coin += coinIncrease;
       nplr.experience += expIncrease;
       this.gameMec.loadEnemy(this.enemyFactory.getNew(nplr?.level || 1)) 
     } else {
       // Enemy is still alive, so it will reverse the attack...
       // reverse attack...
-      nplr = attack(e, nplr) as Player;
+      nplr = attack(nEnm, nplr) as Player;
 
       // check if player is dead!?
       if (isDefendableDead(nplr)) {

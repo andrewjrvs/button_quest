@@ -6,8 +6,6 @@ export function isDefendableDead(thing: Defendable): boolean {
 }
 
 export function attack(thing1: Attackable, thing2: Defendable): Defendable {
-
-
     thing2.health -= thing1.attack;
     return thing2;
 }

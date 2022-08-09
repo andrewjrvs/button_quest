@@ -2,10 +2,10 @@ import { Injectable } from '@angular/core';
 
 import { Preferences } from '@capacitor/preferences';
 import { combineLatest, debounceTime, filter } from 'rxjs';
-import { GameMecService } from './game-mec.service';
-import { Player } from './models/player';
-import { User } from './models/user';
-import { PlayerLibraryService } from './player-library.service';
+import { GameMechanicsService } from './game-mechanics.service';
+import { Actor, Bank, Hero } from './models';
+
+import * as SysUtil from './utils/system-util';
 
 // JSON.parse(v, (keys, value) => typeof value === 'string' && value.startsWith('<bigint>:') ? BigInt(value.substr(9)): value)
 // v = JSON.stringify(u, (key, value) =>
@@ -18,35 +18,30 @@ import { PlayerLibraryService } from './player-library.service';
 })
 export class AppStoreService {
 
-  constructor(private gameMec: GameMecService
-    , private plrSrv: PlayerLibraryService) {
-    combineLatest([gameMec.user$, plrSrv.list$, plrSrv.playerIndex$])
+  constructor(private gameMec: GameMechanicsService) {
+    combineLatest([gameMec.bank$, gameMec.heroList$, gameMec.heroIndex$])
       .pipe(
-        filter(([usr, lst, indx]) => !!usr && !!lst.length)
+        filter(([_, lst]) => !!lst.length )
         , debounceTime(1000)
       )
-      .subscribe(([usr, lst, indx]) => {
-        console.log('setting');
+      .subscribe(([bnk, lst, indx]) => {
         Preferences.set({
           key: 'app-data'
-          , value: JSON.stringify({
-            user: usr, players: lst, activeIndex: indx
-          }, (_, value) => typeof value === 'bigint'
-                             ? "<bigint>:" + value.toString()
-                             : value)
+          , value: SysUtil.jsonStringify({
+            bank: bnk, heros: lst, activeIndex: indx
+          })
         })
       })
   }
 
-  public async pullForFirstLoad(): Promise<[User, Player[], number] | undefined> {
+  public async pullForFirstLoad(): Promise<[Bank, Hero[], number] | undefined> {
     const { value } = await Preferences.get({ key: 'app-data' });
     if (value) {
       try {
-        const dta = JSON.parse(value, (key, value) => typeof value === 'string' &&
-          value.startsWith('<bigint>:')
-          ? BigInt(value.substring(9))
-          : value);
-        return [dta.user as User, dta.players as Player[], dta.activeIndex as number]
+        const dta = SysUtil.jsonParse<[Bank, Actor[], number]>(value);
+        if (dta) {
+          return [dta[0], dta[1].map(d => Hero.create(d)), dta[2]]
+        }
       } catch (ex) {
         return undefined;
       }

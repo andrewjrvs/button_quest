@@ -18,8 +18,8 @@ ARG NODE_VERSION="none"
 RUN if [ "${NODE_VERSION}" != "none" ]; then su vscode -c "umask 0002 && . /usr/local/share/nvm/nvm.sh && nvm install ${NODE_VERSION} 2>&1"; fi
 
 ARG ANDROID_CMD_TOOLS_VERSION="8512546"
-ARG ANDROID_VERSION=31
-ARG ANDROID_BUILD_TOOLS_VERSION=30.0.2
+ARG ANDROID_VERSION=32
+ARG ANDROID_BUILD_TOOLS_VERSION=30.0.3
 ARG NDK_VER="25.0.8775105"
 
 ARG SDK_URL="https://dl.google.com/android/repository/commandlinetools-linux-${ANDROID_CMD_TOOLS_VERSION}_latest.zip"
@@ -51,4 +51,4 @@ RUN ln -sf $ANDROID_HOME/ndk/$NDK_VER $ANDROID_HOME/ndk-bundle
 #     && apt-get -y install --no-install-recommends <your-package-list-here>
 
 # [Optional] Uncomment this line to install global node packages.
-RUN su vscode -c "source /usr/local/share/nvm/nvm.sh && npm install -g @angular/cli @iconic/cli" 2>&1
+RUN su vscode -c "source /usr/local/share/nvm/nvm.sh && npm install -g @angular/cli" 2>&1

@@ -10,7 +10,7 @@ export class EnemyComponent implements OnInit {
 
   @Input()
   public enemy!: Enemy;
-
+  
   constructor() { }
 
   ngOnInit(): void {

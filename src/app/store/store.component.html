@@ -1,0 +1,13 @@
+<ion-card>
+    <ion-card-header>
+      <ion-card-title>Store</ion-card-title>
+    </ion-card-header>
+  
+    <ion-card-content>
+      Looking for equipment to improve your battle, look no further.
+    </ion-card-content>
+    <ion-item *ngFor="let itm of shopItems">
+        <ion-label>{{itm[0].name}}</ion-label>
+        <ion-button (click)="purchase(itm[0], itm[1]);" slot="end">Purchase for {{itm[1]}}</ion-button>
+      </ion-item>
+  </ion-card>

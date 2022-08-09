@@ -1,20 +1,5 @@
 <ion-app>
-  <ion-header>
-    <ion-toolbar>
-
-      <ion-title align-title="center">
-        <div text-center="center">
-          Button Quest
-        </div>
-      </ion-title>
-      <ng-container *ngIf="user$ | async as user">
-        <ion-buttons slot="end">
-          {{ user.coin | coinDisplay }}
-          <ion-icon slot="icon-only" name="wallet"></ion-icon>
-        </ion-buttons>
-      </ng-container>
-    </ion-toolbar>
-  </ion-header>
+  <app-header></app-header>
 
   <ion-router-outlet></ion-router-outlet>
 

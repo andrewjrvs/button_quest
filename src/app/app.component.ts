@@ -1,13 +1,11 @@
 import { Component, NgZone, OnDestroy, OnInit } from '@angular/core';
 import { MenuController, ToastController } from '@ionic/angular';
-import { Observable, of, Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { AppStoreService } from './app-store.service';
-import { GameMecService } from './game-mec.service';
-import { ItemFactoryService } from './item-factory.service';
-import { Player } from './models/player';
+import { GameMecService } from './game-mechanics.service';
+import { Player } from './models/hero';
 import { User } from './models/user';
 import { PlayerLibraryService } from './player-library.service';
-import { findLevelFromExperience, getExpBaseForLevel } from './player-util';
 
 @Component({
   selector: 'app-root',
@@ -25,11 +23,9 @@ export class AppComponent implements OnInit, OnDestroy {
     , private menu: MenuController
     , private gameMec: GameMecService
     , private playerLibray: PlayerLibraryService
-    , private itmSrv: ItemFactoryService
     , private toastController: ToastController
     , private appStore: AppStoreService) {
     appStore.pullForFirstLoad().then((data) => {
-      console.log('data loaded', data);
       if (data) {
         const [usr, plrlst, idx] = data;
         plrlst.forEach(plr => this.playerLibray.addPlayer(plr));
@@ -52,17 +48,6 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   async ngOnInit() {
-    // Network.addListener("networkStatusChange", (status) => {
-    //   this.ngZone.run(() => {
-    //     // This code will run in Angular's execution context
-    //     this.networkStatus = status.connected ? "Online" : "Offline";
-    //   });
-    // });
-    
-    // for (var i = 0; i < 99; i += 1) {
-      
-    //   console.log(`lvl ${i} expneeded ${getExpBaseForLevel(i)} `);
-    // }
 
     this.unsubscribe.push(
       this.gameMec.gameMessage$.subscribe(([msg, icon, header]) => {

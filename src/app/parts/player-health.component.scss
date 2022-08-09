@@ -1,0 +1,12 @@
+.health-display-wrapper {
+    display: grid;
+    grid-template-columns: 40px 1fr;
+}
+ion-icon {
+    margin: auto;
+    width: 24px;
+    font-size: 24px;
+    display: block;
+    margin-top: 3px;
+    color: var(--player-health-warning-color);
+  }

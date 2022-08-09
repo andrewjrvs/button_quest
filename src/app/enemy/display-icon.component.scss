@@ -1,0 +1,8 @@
+.image {
+    background-image: url('../../assets/oryx_16bit_fantasy_creatures_trans.png');
+    background-position: var(--enemy-display-index,  -96px -504px); //-47px -48px, -70px -72px, -117px -120px,
+    height: 25px;
+    width: 24px;
+    margin: auto;
+    margin-top: 3px;
+}

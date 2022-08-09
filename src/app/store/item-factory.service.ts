@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Attachable } from './models/attachable';
+import { Attachable } from '../models/attachable';
 
 function getRandomInt(min: number, max: number): number {
   min = Math.ceil(min);

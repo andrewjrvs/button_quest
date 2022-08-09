@@ -3,5 +3,9 @@
         <ng-container *ngIf="playerList">
             {{ jsonOfiablePlayerList | json }}
         </ng-container>
+        <hr />
+        <ng-container *ngIf="enemy">
+            {{ enemy | json }}
+        </ng-container>
     </div>
 </ion-content>

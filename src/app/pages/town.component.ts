@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ReplaySubject, Subject, Subscription, Unsubscribable } from 'rxjs';
-import { Player } from '../models/player';
+import { Player } from '../models/hero';
 import { PlayerLibraryService } from '../player-library.service';
 import {
   filter, map, tap,
@@ -8,7 +8,7 @@ import {
   shareReplay
 
 } from 'rxjs/operators'
-import { GameMecService } from '../game-mec.service';
+import { GameMecService } from '../game-mechanics.service';
 
 @Component({
   selector: 'app-town',
@@ -61,7 +61,6 @@ export class TownComponent implements OnInit, OnDestroy {
     this.unsubscribe.push(
       this._rest.pipe(
         withLatestFrom(this.activePlayer$, this.gameMec.user$),
-        tap(console.log.bind(window, 'rest subscribtion'))
       ).subscribe(([_, plr, usr]) => {
         const healthDiff = plr!.fullHealth - plr!.health;
         const rPlr = { ...plr } as Player;

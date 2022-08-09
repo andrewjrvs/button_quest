@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, switchMap } from 'rxjs';
 import { combineLatestWith, map } from 'rxjs/operators';
-import { Player } from './models/player';
+import { Player } from './models/hero';
 import { findLevelFromExperience, levelUpPlayer } from './player-util';
 
 @Injectable({
