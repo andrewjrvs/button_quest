@@ -1,9 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { Subscription } from 'rxjs';
-import { GameMecService } from '../game-mechanics.service';
-import { Enemy } from '../models/emeny';
-import { Player } from '../models/hero';
-import { PlayerLibraryService } from '../player-library.service';
+import { filter, Subscription } from 'rxjs';
+import { GameMechanicsService } from '../game-mechanics.service';
+import { Villan, Hero, Bank } from '../models';
+import { jsonStringify } from '../utils/system-util';
 
 @Component({
   selector: 'app-debug',
@@ -13,11 +12,15 @@ import { PlayerLibraryService } from '../player-library.service';
 export class DebugComponent implements OnInit {
 
   private unsubscribe: Subscription[] = [];
-  public playerList?: Player[];
+  public playerList?: Hero[];
   public jsonOfiablePlayerList?: any;
-  public enemy?: Enemy;
+  public enemy?: Villan;
+  public JSONOfiableVillan: any;
 
-  constructor(private plyLibSrv: PlayerLibraryService, private gameMec: GameMecService) { }
+  public bank?: Bank;
+  public JSONOfiableBank: any;
+
+  constructor(private gameMec: GameMechanicsService) { }
 
   ngOnInit(): void {
   }
@@ -29,13 +32,22 @@ export class DebugComponent implements OnInit {
 
   ionViewWillEnter() {
     this.unsubscribe.push(
-      this.plyLibSrv.list$.subscribe(l => {
+      this.gameMec.heroList$.subscribe(l => {
         this.playerList = l
-        this.jsonOfiablePlayerList = JSON.parse(JSON.stringify(l, (_, value) => typeof value === 'bigint'
-          ? "<bigint>:" + value.toString()
-          : value))
+        this.jsonOfiablePlayerList = JSON.parse(jsonStringify(l));
       }),
-      this.gameMec.pendingEnemy$.subscribe(e => this.enemy = e)
+      this.gameMec.activeVillan$.pipe(
+        filter(e => !!e)
+      ).subscribe(e => {
+        this.enemy = e;
+        this.JSONOfiableVillan = JSON.parse(jsonStringify(e));
+      }),
+      this.gameMec.bank$.pipe(
+        filter(b => !!b)
+      ).subscribe(b => {
+        this.bank = b;
+        this.JSONOfiableBank = JSON.parse(jsonStringify(b));
+      })
     );
   }
 

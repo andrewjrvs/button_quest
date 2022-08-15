@@ -1,11 +1,14 @@
 import { MessageRequestType } from "./message-request-type";
-import { Bank, Actor } from "./";
+import { Actor, Item } from "./";
+import { Sack } from "./sack";
 
 export interface MessageData {
-    bank?: Bank;
+    bank?: Sack;
+    isCustomBank?: boolean;
     primary: Actor[];
     secondary?: Actor[];
     force?: boolean;
+    item?: Item;
 }
 
 export interface MessageRequest {

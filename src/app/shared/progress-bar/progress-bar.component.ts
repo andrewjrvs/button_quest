@@ -10,20 +10,20 @@ export class ProgressBarComponent implements OnInit {
   @HostBinding('class.progress') private clss = true;
 
   @Input()
-  public min: number = 0;
+  public min?: bigint | number = 0n;
 
   @Input()
-  public max: number = 100;
+  public max?: bigint | number = 100n;
 
   @Input()
-  public value: number | null = null;
+  public value: bigint | number | null = null;
 
   public getCalcWidth() {
-    const relVal = (this.value || 0) - this.min;
+    const relVal = (BigInt(this.value || 0n)) - (BigInt(this.min || 0n));
     if (relVal < 1) {
       return 0;
     }
-    return Math.ceil(relVal * 100 / (this.max - this.min));
+    return BigInt(relVal * 100n / ((BigInt(this.max || 100n)) - (BigInt(this.min || 0n))));
   }
 
   constructor() { }

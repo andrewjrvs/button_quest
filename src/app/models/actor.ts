@@ -1,8 +1,9 @@
 import { Attackable } from "./attackable";
 import { Defendable } from "./defendable";
+import { Experienced } from "./experienced";
 import { Sack } from "./sack";
 
-export interface Actor extends Attackable, Defendable {
+export interface Actor extends Attackable, Defendable, Experienced {
     /** government issued ID */
     id: string;
 
@@ -29,4 +30,7 @@ export interface Actor extends Attackable, Defendable {
 
     // placeholder
     status: any[]; 
+
+    // location to store 'extra' information;
+    property?: { [key: string]: any };
 }

@@ -1,14 +1,13 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ReplaySubject, Subject, Subscription, Unsubscribable } from 'rxjs';
-import { Player } from '../models/hero';
-import { PlayerLibraryService } from '../player-library.service';
+import { Hero } from '../models';
 import {
   filter, map, tap,
   withLatestFrom, combineLatestWith, startWith,
   shareReplay
 
 } from 'rxjs/operators'
-import { GameMecService } from '../game-mechanics.service';
+import { GameMechanicsService } from '../game-mechanics.service';
 
 @Component({
   selector: 'app-town',
@@ -19,24 +18,23 @@ export class TownComponent implements OnInit, OnDestroy {
 
   private _updated = new Subject<null>();
   private _rest = new Subject<null>();
-  public activePlayer$ = this.plyLibSrv.activePlayer$.pipe(
+  public activePlayer$ = this.gameMec.activeHero$.pipe(
     tap(plr => {
-      if (plr && plr.coin > 0) {
-        this.gameMec.addCoin(plr.coin);
-        plr.coin -= plr.coin;
-        this.plyLibSrv.updatePlayer(plr);
+      if (plr && plr.sack.coin > 0) {
+        this.gameMec.addCoin(plr.sack.coin);
+        plr.sack.coin -= plr.sack.coin;
+        this.gameMec.updatePlayer(plr);
       }
     }),
     combineLatestWith(this._updated.pipe(startWith(null))),
     map(([dta]) => dta),
   );
 
-  public activePlayer?: Player;
+  public activePlayer?: Hero;
 
   private unsubscribe: Subscription[] = []
 
-  constructor(private plyLibSrv: PlayerLibraryService
-              , private gameMec: GameMecService) { }
+  constructor(private gameMec: GameMechanicsService) { }
   
   ngOnDestroy(): void {
     this._rest.complete();
@@ -60,18 +58,10 @@ export class TownComponent implements OnInit, OnDestroy {
 
     this.unsubscribe.push(
       this._rest.pipe(
-        withLatestFrom(this.activePlayer$, this.gameMec.user$),
-      ).subscribe(([_, plr, usr]) => {
-        const healthDiff = plr!.fullHealth - plr!.health;
-        const rPlr = { ...plr } as Player;
-        if (usr.coin < healthDiff) {
-          rPlr.health += Number(usr.coin);
-          this.gameMec.addCoin(-usr.coin);
-        } else {
-          rPlr.health = rPlr.fullHealth;
-          this.gameMec.addCoin(-1 * healthDiff);
-        }
-        this.plyLibSrv.updatePlayer(rPlr);
+        withLatestFrom(this.activePlayer$),
+      ).subscribe(([_, plr]) => {
+        // to do... needs fixing...
+        this.gameMec.rest([plr as any]);
       })
     );
   }

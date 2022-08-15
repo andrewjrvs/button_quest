@@ -1,5 +1,7 @@
+import { Item } from "./item";
+
 export interface Sack {
-    coin: BigInt;
+    coin: bigint;
     limit: number;
-    items: any[];
+    items: Item[];
 }

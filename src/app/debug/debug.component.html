@@ -4,8 +4,12 @@
             {{ jsonOfiablePlayerList | json }}
         </ng-container>
         <hr />
+        <ng-container *ngIf="bank">
+            {{ JSONOfiableBank | json }}
+        </ng-container>
+        <hr />
         <ng-container *ngIf="enemy">
-            {{ enemy | json }}
+            {{ JSONOfiableVillan | json }}
         </ng-container>
     </div>
 </ion-content>

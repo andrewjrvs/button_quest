@@ -27,6 +27,9 @@ export class Villan implements Actor {
     ) {
         this.fullHealth = health;
     }
+    experience: bigint = BigInt(0);
+    currentBreakpoint?: bigint | undefined;
+    nextBreakpoint?: bigint | undefined;
 
     static create(actor: Actor): Villan {
         const rtnPlr = new Villan(
@@ -44,6 +47,7 @@ export class Villan implements Actor {
         rtnPlr.attached.push(...actor.attached);
         rtnPlr.attack = actor.attack;
         rtnPlr.defence = actor.defence;
+        rtnPlr.experience = actor.experience;
         return rtnPlr;
     }
 }

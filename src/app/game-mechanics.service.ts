@@ -1,7 +1,9 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, map, ReplaySubject, Subject, combineLatestWith } from 'rxjs';
-import { Bank, Hero, MessageResponse, Villan } from './models';
+import { Actor, Bank, Hero, Item, MessageRequest, MessageRequestType, MessageResponse, Villan } from './models';
 import * as SysUtil from './utils/system-util';
+import * as LvlUtil from './utils/leveling-util';
+import { Sack } from './models/sack';
 
 @Injectable({
   providedIn: 'root'
@@ -25,10 +27,10 @@ export class GameMechanicsService {
     })
   );
 
-  private _bank = new BehaviorSubject<Bank | null>(null);
+  private _bank = new BehaviorSubject<Bank | undefined>(undefined);
   public bank$ = this._bank.asObservable();
 
-  private _villan = new ReplaySubject<Villan | null>(1);
+  private _villan = new ReplaySubject<Villan | undefined>(1);
   public activeVillan$ = this._villan.asObservable();
 
   private _gameMessage = new Subject<[string, string?, string?]>();
@@ -43,7 +45,11 @@ export class GameMechanicsService {
     this._worker.onmessage = ({ data }: {data: MessageResponse}) => {
       if (data.messages) {
         data.messages.forEach(m => {
-          this._gameMessage.next([m]);
+          if (Array.isArray(m)) {
+            this._gameMessage.next([m[0], m[1]]);
+          } else {
+            this._gameMessage.next([m]);
+          }
         })
       }
       if (data.data.primary) {
@@ -52,14 +58,14 @@ export class GameMechanicsService {
         const arr = [...this._heroList.getValue()];
         const exPlr = arr[idx];
         const player = data.data.primary[0];
-        if (exPlr.experience < player.experience) {
-          const nxtlvl = findLevelFromExperience(player.experience);
-          if (player.level != nxtlvl) {
-            newPlr = levelUpPlayer(newPlr, nxtlvl);
-          }
-        }
-        arr.splice(idx, 1, newPlr);
-        this._playerList.next(arr); 
+        arr.splice(idx, 1, Hero.create(player));
+        this._heroList.next(arr); 
+      }
+      if (data.data.secondary && data.data.secondary.length > 0) {
+        this._villan.next(Villan.create(data.data.secondary[0]));
+      }
+      if (data.data.bank) {
+        this._bank.next(data.data.bank);
       }
     };
   }
@@ -70,6 +76,7 @@ export class GameMechanicsService {
       const nBank = SysUtil.clone(pBank);
       nBank.coin += typeof coin === "number" ? BigInt(coin) : coin;
       this._bank.next(nBank);
+      return;
     }
     throw new Error(`bank doesn't yet exists`);
   } 
@@ -83,9 +90,98 @@ export class GameMechanicsService {
   }
 
   public clearEnemy(): void {
-    this._villan.next(null);
+    this._villan.next(undefined);
   }
 
+  public fight(hero: Hero, villan: Villan): void {
+    this._worker.postMessage(<MessageRequest>{
+      type: MessageRequestType.FIGHT
+      , data: {
+        primary: [hero]
+        , secondary: [villan]
+        , bank: this._bank.getValue()
+      }
+    });
+  }
+
+  public setBank(bnk: Bank): void {
+    this._bank.next(bnk);
+  }
+
+  /**
+   * Heal the list of users that was passed in
+   * @param heroList 
+   * @param force 
+   * @param sack if passed, use this sack as the source
+   */
+  public rest(heroList: Hero[], force: boolean = false, sack?: Sack): void {
+    this._worker.postMessage(<MessageRequest>{
+      type: MessageRequestType.REST
+      , data: {
+        primary: heroList
+        , bank: sack || this._bank.getValue()
+        , isCustomBank: !!sack
+      }
+    })
+  }
+
+  public addHero(hero: Hero): void {
+    var currList = [...this._heroList.getValue()];
+    currList.push(hero);
+    this._heroList.next(currList);
+  }
+
+  public removeHero(idx: number): Hero | null {
+    var currList = [...this._heroList.getValue()];
+    const rtnPlr = currList.splice(idx, 1);
+    this._heroList.next(currList);
+    if (currList.length > 0) {
+      return rtnPlr[0];
+    }
+    return null;
+  }
+
+  public updatePlayer(player: Hero):void {
+    // for now we'll just update the active item
+    let newPlr = { ...player };
+    const idx = this._activeHeroIdx.getValue();
+    const arr = [...this._heroList.getValue()];
+    const exPlr = arr[idx];
+
+    arr.splice(idx, 1, newPlr);
+    this._heroList.next(arr);
+  }
+
+  public setActiveIndex(indx: number): void {
+    this._activeHeroIdx.next(indx);
+  }
+
+  public processDeadHero(hero: Hero): void {
+    this._worker.postMessage({
+      type: MessageRequestType.DEATH
+      , data: {
+        primary: [hero]
+      }
+    })
+  }
+
+  public processItem(itm: Item, primary: Actor, secondary?: Actor): void {
+    this._worker.postMessage({
+      type: MessageRequestType.ITEM
+      , data: {
+        primary: [primary]
+        , secondary: [secondary]
+        , item: itm
+      }
+    })
+  }
+
+  /**
+   * Process a message
+   * @param msg message to send
+   * @param icon icon to use
+   * @param header header of the message
+   */
   public sendGameMessage(msg: string, icon?: string, header?: string): void {
     //this._gameMessage.next([...arguments] as [string, string?, string?]);
     this._gameMessage.next([msg, icon, header]);

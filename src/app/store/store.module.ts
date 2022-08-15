@@ -4,6 +4,7 @@ import { StoreComponent } from './store.component';
 import { StoreService } from './store.service';
 import { ItemFactoryService } from './item-factory.service';
 import { IonicModule } from '@ionic/angular';
+import { SharedModule } from '../shared/shared.module';
 
 
 @NgModule({
@@ -12,7 +13,8 @@ import { IonicModule } from '@ionic/angular';
   ],
   imports: [
     CommonModule,
-    IonicModule
+    IonicModule,
+    SharedModule
   ],
   providers: [
     StoreService

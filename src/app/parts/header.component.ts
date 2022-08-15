@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
-import { GameMecService } from '../game-mechanics.service';
-import { User } from '../models/user';
+import { GameMechanicsService } from '../game-mechanics.service';
+import { Bank } from '../models';
 
 @Component({
   selector: 'app-header',
@@ -11,12 +11,22 @@ import { User } from '../models/user';
 export class HeaderComponent implements OnInit {
 
 
-  public user$: Observable<User> = this.gameMec.user$;
+  public bank$: Observable<Bank | undefined> = this.gameMec.bank$;
+  public hero$ = this.gameMec.activeHero$;
+  public heroSpecs = false;
 
-
-  constructor(private gameMec: GameMecService) { }
+  constructor(private gameMec: GameMechanicsService) { }
 
   ngOnInit(): void {
+  }
+
+  public openSpecs(): void {
+    this.heroSpecs = true;
+
+  }
+
+  public specDismissed(): void {
+    this.heroSpecs = false;
   }
 
 }

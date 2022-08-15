@@ -1,4 +1,7 @@
+import { ItemType } from "./item-type";
+
 export interface Item {
     key: string;
-    type: any;
+    type: ItemType;
+    subType?: string;
 }

@@ -6,6 +6,11 @@
     <ion-card-content>
       Looking for equipment to improve your battle, look no further.
     </ion-card-content>
+    <ion-item *ngFor="let itm of items">
+      <app-item-icon [item]="itm"></app-item-icon>
+      <ion-label>Health</ion-label>
+      <ion-button (click)="purchaseHealth(itm);" slot="end">Purchase {{getHealthPrice(itm)}}</ion-button>
+    </ion-item>
     <ion-item *ngFor="let itm of shopItems">
         <ion-label>{{itm[0].name}}</ion-label>
         <ion-button (click)="purchase(itm[0], itm[1]);" slot="end">Purchase for {{itm[1]}}</ion-button>

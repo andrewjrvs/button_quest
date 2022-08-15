@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { Enemy } from '../models/emeny';
+import { Villan } from '../models';
 
 @Component({
   selector: 'app-enemy',
@@ -9,7 +9,7 @@ import { Enemy } from '../models/emeny';
 export class EnemyComponent implements OnInit {
 
   @Input()
-  public enemy!: Enemy;
+  public enemy!: Villan;
   
   constructor() { }
 

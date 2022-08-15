@@ -29,3 +29,7 @@ export function jsonParse<T>(obj: string): T | null {
 export function clone<T>(obj: T): T {
     return <T>jsonParse(jsonStringify(obj))
 }
+
+export function isNotNullOrUndefined<T>(input: null | undefined | T): input is T {
+    return input != null;
+  }

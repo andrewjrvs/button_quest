@@ -1,12 +1,19 @@
 <ion-content>
     <div class="ion-padding has-header">
-        <ng-container *ngIf="activePlayer">
-            <ng-container *ngIf="enemy">
-                <app-enemy [enemy]="enemy"></app-enemy>
+        <ng-container *ngIf="activeHero">
+            <ng-container *ngIf="villan">
+                <app-enemy [enemy]="villan"></app-enemy>
             </ng-container>
 
-            <app-player [player]="activePlayer"></app-player>
+            <app-player [hero]="activeHero"></app-player>
             <ion-button expand="block" (click)="fight();">Fight</ion-button>
+
+            <div *ngIf="healthOptions">
+                <ion-button *ngFor="let itm of healthOptions" (click)="useHealthItem(itm);">
+                    <app-item-icon [item]="itm"></app-item-icon>
+                </ion-button>
+            </div>
+
         </ng-container>
     </div>
 </ion-content>

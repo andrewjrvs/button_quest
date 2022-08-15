@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 
 import { Preferences } from '@capacitor/preferences';
-import { combineLatest, debounceTime, filter } from 'rxjs';
+import { combineLatest, debounceTime, filter, tap } from 'rxjs';
 import { GameMechanicsService } from './game-mechanics.service';
 import { Actor, Bank, Hero } from './models';
 
@@ -21,7 +21,8 @@ export class AppStoreService {
   constructor(private gameMec: GameMechanicsService) {
     combineLatest([gameMec.bank$, gameMec.heroList$, gameMec.heroIndex$])
       .pipe(
-        filter(([_, lst]) => !!lst.length )
+        //tap(x => console.log('tapper', x)),
+        filter(([_, lst]) => lst.length > 0 )
         , debounceTime(1000)
       )
       .subscribe(([bnk, lst, indx]) => {
@@ -38,11 +39,12 @@ export class AppStoreService {
     const { value } = await Preferences.get({ key: 'app-data' });
     if (value) {
       try {
-        const dta = SysUtil.jsonParse<[Bank, Actor[], number]>(value);
+        const dta = SysUtil.jsonParse < { bank: Bank, heros: Actor[], activeIndex: number }>(value);
         if (dta) {
-          return [dta[0], dta[1].map(d => Hero.create(d)), dta[2]]
+          return [dta.bank, dta.heros.map(d => Hero.create(d)), dta.activeIndex]
         }
       } catch (ex) {
+        console.error(ex);
         return undefined;
       }
     }

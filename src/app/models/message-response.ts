@@ -5,5 +5,5 @@ export interface MessageResponse {
     requestType: MessageRequestType;
     data: MessageData;
     status: boolean;
-    messages: string[];
+    messages: (string|string[])[];
 }

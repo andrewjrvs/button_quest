@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Item, ItemType } from '../models';
 import { Attachable } from '../models/attachable';
 
 function getRandomInt(min: number, max: number): number {
@@ -21,6 +22,7 @@ export class ItemFactoryService {
     ;
     return {
       key: this.generateKey(name, att, def)
+      , type: ItemType.USELESS
       , improveAttack: att
       , improveDefence: def
       , name: name
@@ -35,9 +37,18 @@ export class ItemFactoryService {
     var [name, attack, defence] = key.split('|');
     return {
       key,
+      type: ItemType.USELESS,
       name: name.replace('~', '|').replace('#', ' '),
       improveAttack: parseInt(attack || "0", 10) || 0,
       improveDefence: parseInt(defence || "0", 10) || 0
     }
+  }
+
+  public getHealthContainer(subType: 's' | 'm' | 'f'): Item {
+    return {
+      key: `h-${subType}`
+      , type: ItemType.HEALTH
+      , subType: subType
+    };
   }
 }

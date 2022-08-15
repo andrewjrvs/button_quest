@@ -9,19 +9,19 @@ import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 import { RouteReuseStrategy } from '@angular/router';
 import { LandingComponent } from './pages/landing.component';
 import { ButtonsComponent } from './pages/buttons.component';
-import { PlayerLibraryService } from './player-library.service';
-import { EnemyFactoryService } from './enemy-factory.service';
+import { VillanFactoryService } from './villan-factory.service';
 import { TownComponent } from './pages/town.component';
 import { PlayerComponent } from './parts/player.component';
 import { PlayerHealthComponent } from './parts/player-health.component';
 import { CoinDisplayPipe } from './coin-display.pipe';
-import { GameMecService } from './game-mechanics.service';
+import { GameMechanicsService } from './game-mechanics.service';
 import { AppStoreService } from './app-store.service';
 import { DebugComponent } from './debug/debug.component';
 import { StoreModule } from './store/store.module';
 import { HeaderComponent } from './parts/header.component';
 import { EnemyModule } from './enemy/enemy.module';
 import { SharedModule } from './shared/shared.module';
+import { HeroModule } from './hero/hero.module';
 
 
 @NgModule({
@@ -49,13 +49,13 @@ import { SharedModule } from './shared/shared.module';
     IonicModule.forRoot(),
     StoreModule,
     EnemyModule,
-    SharedModule
+    SharedModule,
+    HeroModule,
   ],
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
-    , PlayerLibraryService
-    , EnemyFactoryService
-    , GameMecService
+    , GameMechanicsService
+    , VillanFactoryService
     , AppStoreService
   ],
   bootstrap: [AppComponent]

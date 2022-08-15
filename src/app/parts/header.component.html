@@ -1,16 +1,22 @@
 <ion-header>
-    <ion-toolbar>
+    <ion-toolbar class="header-toolbar">
 
       <ion-title align-title="center">
         <div text-center="center">
           Button Quest
         </div>
       </ion-title>
-      <ng-container *ngIf="user$ | async as user">
+      <ng-container *ngIf="bank$ | async as bank">
         <ion-buttons slot="end">
-          {{ user.coin | coinDisplay }}
+          {{ bank.coin | coinDisplay }}
           <ion-icon slot="icon-only" name="wallet"></ion-icon>
         </ion-buttons>
       </ng-container>
+      <ng-container *ngIf="hero$ | async as hero">
+        <ion-buttons slot="end" (click)="openSpecs();">
+          <app-hero-icon [hero]="hero"></app-hero-icon>
+        </ion-buttons>
+        <app-spec-popup [hero]="hero" [isOpen]="heroSpecs" (dismissed)="specDismissed();" ></app-spec-popup>
+      </ng-container> 
     </ion-toolbar>
   </ion-header>
