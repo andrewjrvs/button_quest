@@ -6,9 +6,8 @@ import * as FightUtil from './utils/fight-utils';
 import * as LvlUtil from './utils/leveling-util';
 import { Sack } from './models/sack';
 
-function processRest(primaryList: Actor[], sack: Sack | undefined, isForce: boolean = false):
-      { rsp: Actor[], sack: Sack | undefined, messages: string[] } {
-  const rplyPrimaryLst:Actor[] = [];
+function processRest(primaryList: Actor[], sack: Sack | undefined, isForce: boolean = false): { rsp: Actor[], sack: Sack | undefined, messages: string[] } {
+  const rplyPrimaryLst: Actor[] = [];
   let rplySack: Sack | undefined = sack;
   const messages: string[] = [];
   const heal_cost = primaryList.reduce((c, p) => c + (p.fullHealth - p.health), 0)
@@ -35,18 +34,16 @@ function processRest(primaryList: Actor[], sack: Sack | undefined, isForce: bool
   }
 }
 
-function processItem(item: Item, primary: Actor[], secondary?: Actor[]):
-      { primary: Actor[], secondary?: Actor[] }
-{
+function processItem(item: Item, primary: Actor[], secondary?: Actor[]): { primary: Actor[], secondary?: Actor[] } {
   const rtnContent: { primary: Actor[], secondary?: Actor[] } = {
     primary: []
   }
-
+  let hRtnPrimary = { ...primary[0] } as Actor;
   // Check item type?
   switch (item.type) {
     case ItemType.HEALTH:
       // heal based on the size
-      const hRtnPrimary = { ...primary[0] } as Actor
+      
       console.log('processing health', item);
       switch (item.subType) {
         case 'f':
@@ -60,9 +57,9 @@ function processItem(item: Item, primary: Actor[], secondary?: Actor[]):
       }
       rtnContent.primary.push(hRtnPrimary);
       break;
-    case ItemType.ATTACK: 
+    case ItemType.ATTACK:
       switch (item.subType) {
-        case 'X': 
+        case 'X':
           if (secondary) {
             rtnContent.secondary = secondary.map(s => {
               const rtn = { ...s } as Actor
@@ -72,12 +69,28 @@ function processItem(item: Item, primary: Actor[], secondary?: Actor[]):
             // TODO: process isActorDead...
           }
       }
+      break;
+    case ItemType.IMPROVE:
+      const impv = parseInt(item.key.slice(2), 10);
+      switch (item.subType) {
+        case 'h':
+          hRtnPrimary.fullHealth += impv * 10;
+          break;
+        case 'd':
+          hRtnPrimary.defence += impv;
+          break;
+        case 'a':
+          hRtnPrimary.attack += impv;
+          break;
+      }
+      rtnContent.primary.push(hRtnPrimary);
+      break;
   }
 
   return rtnContent;
 }
 
-addEventListener('message', ({ data }: { data: MessageRequest } ) => {
+addEventListener('message', ({ data }: { data: MessageRequest }) => {
   const reply: MessageResponse = {
     requestType: data.type
     , data: {
@@ -93,7 +106,7 @@ addEventListener('message', ({ data }: { data: MessageRequest } ) => {
       // and secondary...
       let _acct = { ...data.data.primary[0] };
       const _defender = FightUtil.processFight(_acct, data.data.secondary![0])
-      
+
       // check if the defender is dead... if not they fight back
       if (!ActorUtil.isActorDead(_defender)) {
         _acct = FightUtil.processFight(_defender, _acct);
@@ -121,7 +134,7 @@ addEventListener('message', ({ data }: { data: MessageRequest } ) => {
       break;
     case MessageRequestType.REST:
       const restRsp = processRest(data.data.primary, data.data.bank, data.data.force)
-      
+
       reply.data.primary.push(...restRsp.rsp);
       if (restRsp.sack) {
         reply.data.bank = restRsp.sack;
@@ -132,7 +145,7 @@ addEventListener('message', ({ data }: { data: MessageRequest } ) => {
         reply.status = false;
         reply.messages.push(...restRsp.messages);
       }
-        
+
       break;
     case MessageRequestType.LEVELUP:
       reply.data.primary.push(...data.data.primary.map(p => {
@@ -155,12 +168,12 @@ addEventListener('message', ({ data }: { data: MessageRequest } ) => {
         // don't process the death yet...
         break;
       }
-      
+
       const deathRsp = processRest(data.data.primary, data.data.bank, true);
-      
+
       // when you die... you lose ALL your money? or just half.. hmm..
       deathRsp.rsp[0].sack.coin = deathRsp.rsp[0].sack.coin / 2n;
-      
+
       // you also half of the difference of your base experince and running experience
       const deathExpDif = deathRsp.rsp[0].experience - (deathRsp.rsp[0].currentBreakpoint || 0n);
       deathRsp.rsp[0].experience -= deathExpDif > 0n ? (deathExpDif / 2n) : 0n;

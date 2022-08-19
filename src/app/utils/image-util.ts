@@ -42,6 +42,27 @@ const typeHealthIndex: { [key: string]: { row: number, columns: number[] }[] } =
     , 'f': [{ row: 1, columns: [15] }]
 }
 
+const typeItemIndex: { [key in ItemType]: { [key: string]: { row: number, columns: number[] }[] } } = {
+    "": {"": [{row: 1, columns: [1] }] },
+    health: {
+        's': [{ row: 1, columns: [3] }]
+        , 'm': [{ row: 1, columns: [9] }]
+        , 'f': [{ row: 1, columns: [15] }]
+     },
+    attack: {
+        '': [{ row: 10, columns: [11] }]
+        , 'fire': [{ row: 10, columns: [16] }]
+        , 'ice': [{ row: 10, columns: [15] }]
+        
+    },
+    improve: {
+        'h': [{ row: 3, columns: [13] }]
+        , 'd': [{ row: 3, columns: [12] }]
+        , 'a': [{ row: 3, columns: [14] }]
+    },
+    "x->t": {}
+}
+
 function getActorRowFromIndex(index: number): number {
     return (index * actor_row_modifier) + actor_row_offset;
 }
@@ -96,22 +117,9 @@ export function getItemDisplayIndex(item: Item): string {
 }
 
 export function getItemTypeXYPoint(item: Item): { x: number, y: number } {
-    let row: number;
-    let colOps: number[];
-    let idx: number;
-    let col: number;
-    
-    switch (item.type) {
-        case ItemType.HEALTH:
-            row = getItemRowFromIndex(typeHealthIndex[item.subType!][0].row);
-            colOps = typeHealthIndex[item.subType!][0].columns;
-            idx = 0;
-            col = getItemColumnFromIndex(colOps[idx]);
-            break;
-        default:
-            col = 0;
-            row = 0;
-    }
-    
+    let row: number = getItemRowFromIndex(typeItemIndex[item.type][item.subType!][0].row);
+    let colOps: number[] = typeItemIndex[item.type][item.subType!][0].columns;
+    let idx: number = 0;
+    let col: number = getItemColumnFromIndex(colOps[idx]);
     return { x: col, y: row };
 }

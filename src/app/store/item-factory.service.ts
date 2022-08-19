@@ -1,12 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Item, ItemType } from '../models';
 import { Attachable } from '../models/attachable';
-
-function getRandomInt(min: number, max: number): number {
-  min = Math.ceil(min);
-  max = Math.floor(max);
-  return Math.floor(Math.random() * (max - min) + min); 
-}
+import * as SysUtil from '../utils/system-util';
 
 @Injectable({
   providedIn: 'root'
@@ -16,12 +11,12 @@ export class ItemFactoryService {
   constructor() { }
 
   public getNewWeapon(lvl: number): Attachable {
-    const att = getRandomInt(0, lvl) + 1 * (getRandomInt(0, 100) % 7 === 0 ? 4 : 1)
-      , def = getRandomInt(0, 100) % 7 === 0 ? getRandomInt(0, lvl) + 1 : 0
+    const att = SysUtil.getRandomInt(0, lvl) + 1 * (SysUtil.getRandomInt(0, 100) % 7 === 0 ? 4 : 1)
+      , def = SysUtil.getRandomInt(0, 100) % 7 === 0 ? SysUtil.getRandomInt(0, lvl) + 1 : 0
       , name = `sword +${att}`
     ;
     return {
-      key: this.generateKey(name, att, def)
+      key: this.generateKey(name, att, def, '')
       , type: ItemType.USELESS
       , improveAttack: att
       , improveDefence: def
@@ -29,8 +24,40 @@ export class ItemFactoryService {
     }
   }
 
-  private generateKey(name: string, attack: number, defence: number): string {
-    return `${name.replace('#', '').replace('~', '').replace(' ', '#').replace('|', '~')}|${attack}|${defence}`;
+  public generateWeapon(lvl: number): Attachable {
+    const att = SysUtil.getRandomInt(0, lvl) + 1 * (SysUtil.getRandomInt(0, 100) % 7 === 0 ? 4 : 1)
+      , def = SysUtil.getRandomInt(0, 100) % 7 === 0 ? SysUtil.getRandomInt(0, lvl) + 1 : 0
+      , subType = ['', 'fire', 'ice'][SysUtil.getRandomInt(0, 3)]
+      , name = (subType ? subType + ' ' : '') + `weapon +${att}`
+      ;
+    return {
+      key: this.generateKey('attack', att, def, subType)
+      , type: ItemType.ATTACK
+      , improveAttack: att
+      , improveDefence: def
+      , name: name
+      , subType: subType
+    };
+  }
+
+  public generateDefence(lvl: number): Attachable {
+    const att = SysUtil.getRandomInt(0, 100) % 7 === 0 ? SysUtil.getRandomInt(0, lvl) + 1 : 0
+      , def = SysUtil.getRandomInt(0, lvl) + 1 * (SysUtil.getRandomInt(0, 100) % 7 === 0 ? 4 : 1)
+      , subType = ['', 'fire'][SysUtil.getRandomInt(0, 2)]
+      , name = (subType ? subType + ' ' : '') + `defence +${att}`
+      ;
+    return {
+      key: this.generateKey('attack', att, def, subType)
+      , type: ItemType.ATTACK
+      , improveAttack: att
+      , improveDefence: def
+      , name: name
+      , subType: subType
+    };
+  }
+
+  private generateKey(name: string, attack: number, defence: number, subType: string): string {
+    return `${name.replace('#', '').replace('~', '').replace(' ', '#').replace('|', '~')}|${attack}|${defence}|${subType}`;
   }
 
   private generateAttachableFromKey(key: string): Attachable {
@@ -50,5 +77,15 @@ export class ItemFactoryService {
       , type: ItemType.HEALTH
       , subType: subType
     };
+  }
+
+  public generateImproveItem(subType?: string, cnt: number = 1): Item {
+    var iTpe = cnt.toString();
+    var u = subType ? subType : ['a', 'h', 'd'][SysUtil.getRandomInt(0, 3)];
+    return {
+      key: `i-${iTpe}`
+      , type: ItemType.IMPROVE
+      , subType: u
+    }
   }
 }

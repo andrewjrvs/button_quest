@@ -8,11 +8,11 @@
     </ion-card-content>
     <ion-item *ngFor="let itm of items">
       <app-item-icon [item]="itm"></app-item-icon>
-      <ion-label>Health</ion-label>
-      <ion-button (click)="purchaseHealth(itm);" slot="end">Purchase {{getHealthPrice(itm)}}</ion-button>
+      <ion-label  class="display-item-label" >{{getItemLabel(itm)}}</ion-label>
+      <ion-button (click)="purchase(itm);" slot="end">Purchase {{getPrice(itm)}}</ion-button>
     </ion-item>
     <ion-item *ngFor="let itm of shopItems">
         <ion-label>{{itm[0].name}}</ion-label>
-        <ion-button (click)="purchase(itm[0], itm[1]);" slot="end">Purchase for {{itm[1]}}</ion-button>
+        <ion-button slot="end">Purchase for {{itm[1]}}</ion-button>
       </ion-item>
   </ion-card>

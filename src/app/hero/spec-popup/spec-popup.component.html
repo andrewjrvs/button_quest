@@ -15,20 +15,34 @@
             <ion-item>
                 <ion-toolbar>
                     <ion-buttons slot="primary">
-                      <ion-button>
-                        <ion-icon tile="Items" slot="icon-only" name="briefcase-outline"></ion-icon>
-                      </ion-button>
-                      <ion-button>
-                        <ion-icon slot="icon-only" name="search"></ion-icon>
-                      </ion-button>
+                        <ion-button>
+                            <ion-icon tile="Items" slot="icon-only" name="briefcase-outline"></ion-icon>
+                        </ion-button>
+                        <ion-button>
+                            <ion-icon slot="icon-only" name="search"></ion-icon>
+                        </ion-button>
                     </ion-buttons>
-                  </ion-toolbar>
+                </ion-toolbar>
 
-                
+
             </ion-item>
             <ion-item>
                 testing 123
             </ion-item>
+        </ion-content>
+        <ion-content class="ion-padding">
+            <ng-container *ngIf="hero?.sack as sack">
+                <ion-item>
+                    Coin: {{sack.coin}}
+                </ion-item>
+                <ion-item *ngFor="let itm of sack.items">
+                    <app-item-icon [item]="itm"></app-item-icon>
+                    <ion-label>{{itm.key}}</ion-label>
+                    <ion-button *ngIf="usable(itm);" (click)="processItem(itm);" slot="end"> use </ion-button>
+                    <ion-button *ngIf="attachable(itm);" (click)="attachItem(itm);" slot="end"> Attach </ion-button>
+                    
+                </ion-item>
+            </ng-container>
         </ion-content>
 
     </ng-template>

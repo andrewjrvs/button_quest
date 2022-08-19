@@ -24,8 +24,51 @@ export class StoreComponent implements OnInit {
     'f': 10000n * 5n
   }
 
-  public getHealthPrice(itm: Item): bigint {
-    return this.healthPrice[itm.subType === 's' ? 's' : itm.subType === 'm' ? 'm' : 'f'];
+  public getPrice(itm: Item): bigint {
+    if (itm.type === ItemType.HEALTH) {
+      return this.healthPrice[itm.subType === 's' ? 's' : itm.subType === 'm' ? 'm' : 'f'];
+    }
+    if (itm.type === ItemType.IMPROVE) {
+      return 50000n;
+    }
+    if (itm.type === ItemType.ATTACK) {
+      let aItm = itm as Attachable;
+      let aBPrice = 500n * BigInt(aItm.improveAttack!);
+      if (aItm.improveDefence!) {
+        aBPrice += 1000n * BigInt(aItm.improveDefence);
+      }
+      if (aItm.subType !== '') {
+        aBPrice += 2500n
+      }
+      return aBPrice;
+    }
+    return 1000000n;
+  }
+
+  public getItemLabel(itm: Item): string {
+    let rtnLabel = 'UNSET';
+    switch (itm.type) {
+      case ItemType.HEALTH:
+        switch (itm.subType) {
+          case 'f': rtnLabel = 'Full Health'; break;
+          case 'm': rtnLabel = 'Medium Health'; break;
+          default: rtnLabel = 'Small Health';
+        }
+        break;
+      case ItemType.IMPROVE:
+        switch (itm.subType) {
+          case 'h': rtnLabel = 'Improve Health'; break;
+          case 'a': rtnLabel = 'Improve Attack'; break;
+          case 'd': rtnLabel = 'Improve Defence'; break;
+          default: rtnLabel = 'Unknown Improvement';
+        }   
+        break;
+      case ItemType.ATTACK:
+        rtnLabel = (itm as Attachable).name || 'Unknown';
+        break;
+    }
+
+    return rtnLabel;
   }
 
   public unsubcribable: Subscription[] = [];
@@ -34,27 +77,33 @@ export class StoreComponent implements OnInit {
     , private gameMec: GameMechanicsService) { }
 
   ngOnInit(): void {
+
+    this.items.push(this.itemFactory.generateImproveItem());
+
     this.unsubcribable.push(
       this.gameMec.activeHero$
         .pipe(filter(p => !!p))
         .subscribe(p => {
-          if (this.items.length < 1) {
-            this.items.push(this.itemFactory.getHealthContainer('s'));
-            if ((p?.level || 0) > 10) {
-              this.items.push(this.itemFactory.getHealthContainer('m'));
-            }
-            if ((p?.level || 0) > 50) {
-              this.items.push(this.itemFactory.getHealthContainer('f'));
-            }
-          } 
+
+          if ((p?.level || 0) > 50 && this.items.findIndex(x => x.key === 'h-f') < 0) {
+            this.items.unshift(this.itemFactory.getHealthContainer('f'));
+          }
+          if ((p?.level || 0) > 10 && this.items.findIndex(x => x.key === 'h-m') < 0) {
+            this.items.unshift(this.itemFactory.getHealthContainer('m'));
+          }
+          if (this.items.findIndex(x => x.key === 'h-s') < 0) {
+            this.items.unshift(this.itemFactory.getHealthContainer('s'));
+          }
+
           this.activePlayer = p;
           if (this.shopItems.length < 1) {
             for (var i = 0; i < 3; i++) {
-              const nItem = this.itemFactory.getNewWeapon(p?.level || 1);
-              const price = ((nItem.improveAttack || 0) + (nItem.improveDefence || 0) || 1) * 1000;
-              this.shopItems.push(
-                [nItem, price]
-              );
+              const nItem = this.itemFactory.generateWeapon(p?.level || 1);
+              this.items.push(nItem);
+              // const price = ((nItem.improveAttack || 0) + (nItem.improveDefence || 0) || 1) * 1000;
+              // this.shopItems.push(
+              //   [nItem, price]
+              // );
             }
           }
         })
@@ -62,40 +111,20 @@ export class StoreComponent implements OnInit {
     );
   }
 
-  public purchase(itm: Attachable, cost: number) {
-    // if (this.gameMec.getCoin() >= BigInt(cost)) {
-    //   this.gameMec.addCoin(BigInt(0) - BigInt(cost));
-    //   const nplr = { ...this.activePlayer } as Hero;
-    //   nplr?.attachments.push(itm);
-    //   this.plrLibsrv.updatePlayer(nplr);
-    //   const idx = this.shopItems.findIndex(([im, cst]) => itm === im);
-    //   this.shopItems.splice(idx, 1);
-    // }
-  }
 
-  public purchaseHealth(itm: Item): void {
-    if ((this.activePlayer!.sack.items.length) >= 
+  public purchase(itm: Item): void {
+    if ((this.activePlayer!.sack.items.length) >=
       (this.activePlayer!.sack.limit)) {
       this.gameMec.sendGameMessage('Not enough space in bag');
       return;
     }
 
-    if (itm.type === ItemType.HEALTH) {
-      let price = this.healthPrice['s'];
-      switch (itm.subType) {
-        case 'm':
-          price = this.healthPrice['m'];
-          break;
-        case 'f':
-          price = this.healthPrice['f'];
-      }
-      console.log('trying to buy', this.bank, price);
-      if (this.bank && this.bank.coin >= price) {
-        this.bank.coin -= price;
-        this.activePlayer?.sack.items.push(itm);
-        this.gameMec.updatePlayer(this.activePlayer!);      
-      }
-
+    const price = this.getPrice(itm);
+    
+    if (this.bank && this.bank.coin >= price) {
+      this.bank.coin -= price;
+      this.activePlayer?.sack.items.push({ ...itm });
+      this.gameMec.updatePlayer(this.activePlayer!);
     }
   }
 
@@ -105,13 +134,15 @@ export class StoreComponent implements OnInit {
     this.shopItems.length = 0;
   }
 
-  ionViewWillEnter() { 
+  ionViewWillEnter() {
     console.log('ionviewwillenter');
-    
-    
+
+
   }
 
   ionViewDidLeave() {
     console.log('ionviewdidleave');
+    
+    this.unsubcribable.forEach(u => u.unsubscribe());
   }
 }

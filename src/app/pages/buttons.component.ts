@@ -62,7 +62,7 @@ export class ButtonsComponent implements OnInit, OnDestroy {
   }
 
   public useHealthItem(itm: Item): void {
-    console.log('use heath with ', itm);
+
     this._useItem.next(itm);
   }
 

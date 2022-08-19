@@ -1,3 +1,9 @@
+:host {
+    display: inline-block;
+
+    margin-left: 1em;
+    margin-right: 1em;
+}
 .image {
     background-image: url('../../../assets/oryx_16bit_fantasy_items_trans.png');
     background-position: var(--item-display-index,  -96px -504px); //-47px -48px, -70px -72px, -117px -120px,
