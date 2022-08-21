@@ -26,9 +26,43 @@
 
 
             </ion-item>
-            <ion-item>
-                testing 123
-            </ion-item>
+            <ion-list *ngIf="hero">
+                <ion-item>
+                  <ion-label>Auto Deposit</ion-label>
+                  <ion-checkbox #autoDeposit slot="end" (ionChange)="hero.property!['autoDeposit'] = autoDeposit?.checked || false" [checked]="hero.property!['autoDeposit'] || false"></ion-checkbox>
+                </ion-item>
+                <ion-item *ngIf="hero.property && hero.property!['assignable']">
+                    <ion-label>Assignable</ion-label>
+                    <ion-note slot="end">{{hero.property!['assignable']}}</ion-note>
+                </ion-item>
+                <ion-item>
+                    <ion-label>Attack</ion-label>
+                    <ion-buttons slot="end" *ngIf="hero.property && hero.property!['assignable'] && hero.property!['assignable'] > 0">
+                        <ion-button (click)="changeProperty('+', 'a')">
+                            <ion-icon  slot="icon-only" name="add-circle"></ion-icon>
+                        </ion-button>
+                    </ion-buttons>
+                    <ion-note slot="end">{{hero.attack}}</ion-note>
+                </ion-item>
+                <ion-item>
+                    <ion-label>Defence</ion-label>
+                    <ion-buttons slot="end" *ngIf="hero.property && hero.property!['assignable'] && hero.property!['assignable'] > 0">
+                        <ion-button (click)="changeProperty('+', 'd')">
+                            <ion-icon  slot="icon-only" name="add-circle"></ion-icon>
+                        </ion-button>
+                    </ion-buttons>
+                    <ion-note slot="end">{{hero.defence}}</ion-note>
+                </ion-item>
+                <ion-item>
+                    <ion-label>Health</ion-label>
+                    <ion-buttons slot="end" *ngIf="hero.property && hero.property!['assignable'] && hero.property!['assignable'] > 0">
+                        <ion-button (click)="changeProperty('+', 'h')">
+                            <ion-icon  slot="icon-only" name="add-circle"></ion-icon>
+                        </ion-button>
+                    </ion-buttons>
+                    <ion-note slot="end">{{hero.fullHealth}}</ion-note>
+                </ion-item>
+              </ion-list>
         </ion-content>
         <ion-content class="ion-padding">
             <ng-container *ngIf="hero?.sack as sack">

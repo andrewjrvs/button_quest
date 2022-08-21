@@ -7,13 +7,15 @@
         </div>
       </ion-title>
       <ng-container *ngIf="bank$ | async as bank">
-        <ion-buttons slot="end">
-          {{ bank.coin | coinDisplay }}
-          <ion-icon slot="icon-only" name="wallet"></ion-icon>
-        </ion-buttons>
+        
       </ng-container>
       <ng-container *ngIf="hero$ | async as hero">
-        <ion-buttons slot="end" (click)="openSpecs();">
+        <ion-buttons slot="end" class="sack">
+          {{ hero.sack.coin | coinDisplay }}
+          <ion-icon slot="icon-only" name="wallet"></ion-icon>
+          ({{ hero.sack.items.length}})
+        </ion-buttons>
+        <ion-buttons class="hero" slot="end" (click)="openSpecs();">
           <app-hero-icon [hero]="hero"></app-hero-icon>
         </ion-buttons>
         <app-spec-popup [hero]="hero" [isOpen]="heroSpecs" (dismissed)="specDismissed();" ></app-spec-popup>

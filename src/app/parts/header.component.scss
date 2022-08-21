@@ -1,8 +1,14 @@
-ion-header ion-toolbar{
-    --background: url("../../assets/oryx_16bit_background_trans.png") 0px -391px repeat-x;
-    --opacity-scale: .1;
+ion-header {
+    background-color: white;
+    ion-toolbar{
+        --background: url("../../assets/oryx_16bit_background_trans.png") 0px -391px repeat-x;
+        --opacity-scale: .1;
+    }
 }
-
 .header-toolbar {
     padding-right: 1em;
+}
+
+.sack {
+    margin-right: .5em;
 }

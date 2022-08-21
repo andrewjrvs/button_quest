@@ -1,10 +1,24 @@
 <ion-content>
-    <div class="ion-padding has-header">
+    <div class="ion-padding has-header home-grid">
         <ng-container *ngIf="activePlayer">
-            <app-player-health [hero]="activePlayer"></app-player-health>
-        </ng-container>
-        <ion-button expand="block" (click)="rest();">Rest</ion-button>
+            <ion-card class="health">
+                <ion-card-content>
+                    <app-player-health [hero]="activePlayer"></app-player-health>
+                    <ion-button expand="block" (click)="rest();">Rest</ion-button>
+                </ion-card-content>
+            </ion-card>
+            <ion-card class="bank" *ngIf="bank$ | async bank">
+                <app-bank-display [bank]="bank" [depositable]="activePlayer.sack.coin"
+                (withDrawCash)="bankCoinChange('w', $event);"
+                (depositCash)="bankCoinChange('d', $event);"></app-bank-display>
+            </ion-card>
 
-        <app-store></app-store>
+            <ion-card class="store">
+
+                <app-store #store [hero]="activePlayer" [level]="activePlayer.level" [bank]="bank$ | async"></app-store>
+
+            </ion-card>
+        </ng-container>
+
     </div>
 </ion-content>

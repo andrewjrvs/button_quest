@@ -1,7 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Attachable } from '../models/attachable';
 import { ItemFactoryService } from './item-factory.service';
-import { filter, take } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
 import { GameMechanicsService } from '../game-mechanics.service';
 import { Bank, Hero, Item, ItemType } from '../models';
@@ -15,8 +14,20 @@ export class StoreComponent implements OnInit {
 
   public items: Item[] = [];
   public shopItems: [Attachable, number][] = [];
-  public activePlayer?: Hero;
-  public bank?: Bank;
+  
+  @Input()
+  public hero!: Hero;
+
+  @Input()
+  public bank?: Bank | null;
+
+  @Input()
+  public level: number = 1;
+
+  @Output()
+  public purchased = new EventEmitter<Item>();
+
+  private storeOpened = false;
 
   public healthPrice = {
     's': 100n * 5n,
@@ -75,46 +86,53 @@ export class StoreComponent implements OnInit {
 
   constructor(private itemFactory: ItemFactoryService
     , private gameMec: GameMechanicsService) { }
+  
+
 
   ngOnInit(): void {
+    this.open();
+  }
+  public open(): void {
+    if (this.storeOpened) {
+      // the store is already open...
+      return; 
+    }
+    
+    this.storeOpened = true;
+
+    const lvl = this.level;
 
     this.items.push(this.itemFactory.generateImproveItem());
 
-    this.unsubcribable.push(
-      this.gameMec.activeHero$
-        .pipe(filter(p => !!p))
-        .subscribe(p => {
+    if (lvl > 50 && this.items.findIndex(x => x.key === 'h-f') < 0) {
+      this.items.unshift(this.itemFactory.getHealthContainer('f'));
+    }
+    if (lvl > 10 && this.items.findIndex(x => x.key === 'h-m') < 0) {
+      this.items.unshift(this.itemFactory.getHealthContainer('m'));
+    }
+    if (this.items.findIndex(x => x.key === 'h-s') < 0) {
+      this.items.unshift(this.itemFactory.getHealthContainer('s'));
+    }
 
-          if ((p?.level || 0) > 50 && this.items.findIndex(x => x.key === 'h-f') < 0) {
-            this.items.unshift(this.itemFactory.getHealthContainer('f'));
-          }
-          if ((p?.level || 0) > 10 && this.items.findIndex(x => x.key === 'h-m') < 0) {
-            this.items.unshift(this.itemFactory.getHealthContainer('m'));
-          }
-          if (this.items.findIndex(x => x.key === 'h-s') < 0) {
-            this.items.unshift(this.itemFactory.getHealthContainer('s'));
-          }
+    if (this.shopItems.length < 1) {
+      for (var i = 0; i < 3; i++) {
+        const nItem = this.itemFactory.generateWeapon(lvl || 1);
+        this.items.push(nItem);
+      }
+    }
 
-          this.activePlayer = p;
-          if (this.shopItems.length < 1) {
-            for (var i = 0; i < 3; i++) {
-              const nItem = this.itemFactory.generateWeapon(p?.level || 1);
-              this.items.push(nItem);
-              // const price = ((nItem.improveAttack || 0) + (nItem.improveDefence || 0) || 1) * 1000;
-              // this.shopItems.push(
-              //   [nItem, price]
-              // );
-            }
-          }
-        })
-      , this.gameMec.bank$.subscribe(b => this.bank = b)
-    );
   }
 
+  public close(): void {
+    this.storeOpened = false;
+    this.unsubcribable.forEach(u => u.unsubscribe());
+    this.shopItems.length = 0;
+    this.items.length = 0;
+  }
 
   public purchase(itm: Item): void {
-    if ((this.activePlayer!.sack.items.length) >=
-      (this.activePlayer!.sack.limit)) {
+    if ((this.hero!.sack.items.length) >=
+      (this.hero!.sack.limit)) {
       this.gameMec.sendGameMessage('Not enough space in bag');
       return;
     }
@@ -123,26 +141,20 @@ export class StoreComponent implements OnInit {
     
     if (this.bank && this.bank.coin >= price) {
       this.bank.coin -= price;
-      this.activePlayer?.sack.items.push({ ...itm });
-      this.gameMec.updatePlayer(this.activePlayer!);
+      this.hero?.sack.items.push({ ...itm });
+      this.gameMec.updatePlayer(this.hero!);
     }
   }
 
   ngOnDestroy(): void {
-    console.log('store destory')
-    this.unsubcribable.forEach(u => u.unsubscribe());
-    this.shopItems.length = 0;
+    this.close();
   }
 
   ionViewWillEnter() {
-    console.log('ionviewwillenter');
-
 
   }
 
   ionViewDidLeave() {
-    console.log('ionviewdidleave');
-    
-    this.unsubcribable.forEach(u => u.unsubscribe());
+    this.close();
   }
 }

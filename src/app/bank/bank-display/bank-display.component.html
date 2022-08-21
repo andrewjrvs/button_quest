@@ -1,0 +1,45 @@
+<ion-card-header class="hdr">
+    <div class="image"></div>
+    <ion-card-title>Bank</ion-card-title>
+</ion-card-header>
+
+<ion-item-group *ngIf="bank">
+    <ion-item>
+        <app-coin-icon></app-coin-icon> {{ bank.coin }}
+
+        <ion-buttons slot="end">
+            <ion-button (click)="addToBank();">
+                <ion-icon  slot="icon-only" name="add-circle"></ion-icon>
+            </ion-button>
+            <ion-button (click)="removeFromBank();" >
+                <ion-icon slot="icon-only" name="remove-circle"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+    </ion-item>
+    <ion-item *ngFor="let itm of bank.items">
+        <app-item-icon [item]="itm"></app-item-icon> {{ itm.key }}
+    </ion-item>
+</ion-item-group>
+
+<ion-modal [isOpen]="isOpen" (willDismiss)="onWillDismiss($event)">
+    <ng-template>
+        <ion-header>
+            <ion-toolbar>
+                <ion-buttons slot="start">
+                    <ion-button (click)="cancel()">Cancel</ion-button>
+                </ion-buttons>
+                <ion-title> <app-coin-icon></app-coin-icon> Transfer</ion-title>
+                <ion-buttons slot="end">
+                    <ion-button (click)="confirm()" [strong]="true">Confirm</ion-button>
+                </ion-buttons>
+            </ion-toolbar>
+        </ion-header>
+        <ion-content class="ion-padding">
+
+            <ion-item>
+                <ion-label >{{ msg }} Amount</ion-label>
+                <ion-input type="number" #chng [max]="maxAmt" min="0" [value]="changeAmount" (input)="changeAmount = $any(chng.value);" inputmode="numeric"></ion-input>
+              </ion-item>
+        </ion-content>
+    </ng-template>
+</ion-modal>

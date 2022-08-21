@@ -1,6 +1,6 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ReplaySubject, Subject, Subscription, Unsubscribable } from 'rxjs';
-import { Hero } from '../models';
+import { Bank, Hero } from '../models';
 import {
   filter, map, tap,
   withLatestFrom, combineLatestWith, startWith,
@@ -8,6 +8,7 @@ import {
 
 } from 'rxjs/operators'
 import { GameMechanicsService } from '../game-mechanics.service';
+import { StoreComponent } from '../store/store.component';
 
 @Component({
   selector: 'app-town',
@@ -20,7 +21,7 @@ export class TownComponent implements OnInit, OnDestroy {
   private _rest = new Subject<null>();
   public activePlayer$ = this.gameMec.activeHero$.pipe(
     tap(plr => {
-      if (plr && plr.sack.coin > 0) {
+      if (plr && plr.sack.coin > 0 && (plr.property && plr.property['autoDeposit'])) {
         this.gameMec.addCoin(plr.sack.coin);
         plr.sack.coin -= plr.sack.coin;
         this.gameMec.updatePlayer(plr);
@@ -30,7 +31,14 @@ export class TownComponent implements OnInit, OnDestroy {
     map(([dta]) => dta),
   );
 
+  public bank$ = this.gameMec.bank$;
+  
+
+  @ViewChild('store') storeComp?: StoreComponent;
+
   public activePlayer?: Hero;
+
+  public bank?: Bank;
 
   private unsubscribe: Subscription[] = []
 
@@ -44,7 +52,10 @@ export class TownComponent implements OnInit, OnDestroy {
 
   ionViewDidLeave() {
     this.unsubscribe.forEach(fn => fn.unsubscribe()); 
+    this.unsubscribe.length = 0;
+    this.storeComp && this.storeComp.close();
     this.activePlayer = undefined;
+    this.bank = undefined;
   }
 
   ionViewWillEnter() {
@@ -54,6 +65,8 @@ export class TownComponent implements OnInit, OnDestroy {
     this.unsubscribe.push(
       this.activePlayer$
         .subscribe(p => this.activePlayer = p)
+      , this.gameMec.bank$.subscribe(b => this.bank = b)
+      
     );
 
     this.unsubscribe.push(
@@ -64,6 +77,8 @@ export class TownComponent implements OnInit, OnDestroy {
         this.gameMec.rest([plr as any]);
       })
     );
+
+    this.storeComp && this.storeComp.open();
   }
 
   ngOnInit(): void {
@@ -74,4 +89,17 @@ export class TownComponent implements OnInit, OnDestroy {
     this._rest.next(null);
   }
 
+  public bankCoinChange(dir: 'w' | 'd', amt: bigint): void {
+    if (this.activePlayer && this.bank) {
+      if (dir === 'w') {
+        this.gameMec.addCoin(-1n * amt);
+        this.activePlayer.sack.coin += amt;
+        this.gameMec.updatePlayer(this.activePlayer);
+      } else {
+        this.gameMec.addCoin(amt);
+        this.activePlayer.sack.coin -= amt;
+        this.gameMec.updatePlayer(this.activePlayer);
+      }
+    }
+  }
 }

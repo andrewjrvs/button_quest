@@ -1,0 +1,43 @@
+// :host {
+//     display: grid; 
+//     grid-template-rows: 25px 1fr;
+//     grid-template-columns: 40px 1fr;
+// }
+.hdr {
+    display: grid;
+    grid-template-columns: 40px 1fr;
+
+    .image {
+        background-image: url('../../../assets/oryx_16bit_fantasy_world_262.png');
+        display: inline-block;
+        height: 24px;
+        width: 24px;
+        margin-left: 5px;
+        margin-right: 5px;
+        margin: auto;
+        grid-row-start: 1;
+        grid-column-start: 1;
+
+        grid-row-end: 2;
+        grid-column-end: 2;
+
+        :host(.empty) & {
+            background-image: url('../../../assets/oryx_16bit_fantasy_world_264.png');
+        }
+        :host(.broken) & {
+            background-image: url('../../../assets/oryx_16bit_fantasy_world_261.png');
+        }
+    }
+}
+
+// .title {
+//     grid-row-start: 1;
+//     grid-column-start: 2;
+// }
+// .info {
+//     grid-row-start: 2;
+//     grid-column-start: 1;
+//     background-color: red;
+//     grid-row-end: 3;
+//     grid-column-end: -1;
+// }

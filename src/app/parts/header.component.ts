@@ -11,7 +11,7 @@ import { Bank } from '../models';
 export class HeaderComponent implements OnInit {
 
 
-  public bank$: Observable<Bank | undefined> = this.gameMec.bank$;
+  public bank$ = this.gameMec.bank$;
   public hero$ = this.gameMec.activeHero$;
   public heroSpecs = false;
 
