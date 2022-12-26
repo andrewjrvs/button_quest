@@ -7,7 +7,7 @@ export class Hero implements Actor {
     
     public sack: Sack = {
         coin: BigInt(0)
-        , limit: 10
+        , limit: 100
         , items: []
     }; 
 

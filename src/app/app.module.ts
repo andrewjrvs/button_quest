@@ -23,6 +23,7 @@ import { EnemyModule } from './enemy/enemy.module';
 import { SharedModule } from './shared/shared.module';
 import { HeroModule } from './hero/hero.module';
 import { BankModule } from './bank/bank.module';
+import { StorgageModule } from './storage/storage.module';
 
 
 @NgModule({
@@ -53,6 +54,7 @@ import { BankModule } from './bank/bank.module';
     SharedModule,
     HeroModule,
     BankModule,
+    StorgageModule,
   ],
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }

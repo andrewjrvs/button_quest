@@ -1,0 +1,30 @@
+<ion-list *ngIf="enemy">
+    <ion-item>
+        <ion-label>Name</ion-label>
+        <ion-note slot="end">{{enemy.name}}</ion-note>
+    </ion-item>
+    <ion-item>
+        <ion-label>Type</ion-label>
+        <ion-note slot="end">{{enemy.type}}</ion-note>
+    </ion-item>
+    <ion-item>
+        <ion-label>Sub-Type</ion-label>
+        <ion-note slot="end">{{enemy.subType}}</ion-note>
+    </ion-item>        
+    <ion-item>
+        <ion-label>Level</ion-label>
+        <ion-note slot="end">{{enemy.level}}</ion-note>
+    </ion-item>    
+    <ion-item>
+        <ion-label>Attack</ion-label>
+        <ion-note slot="end">{{enemy.attack}}</ion-note>
+    </ion-item>
+    <ion-item>
+        <ion-label>Defence</ion-label>
+        <ion-note slot="end">{{enemy.defence}}</ion-note>
+    </ion-item>
+    <ion-item>
+        <ion-label>Health</ion-label>
+        <ion-note slot="end">{{enemy.fullHealth}}</ion-note>
+    </ion-item>
+</ion-list>

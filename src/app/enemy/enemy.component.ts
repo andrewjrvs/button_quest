@@ -11,9 +11,20 @@ export class EnemyComponent implements OnInit {
   @Input()
   public enemy!: Villan;
   
+  public enemySpecs: boolean = false;
+
   constructor() { }
 
   ngOnInit(): void {
+  }
+
+  public openSpecs(): void {
+    this.enemySpecs = true;
+
+  }
+
+  public specDismissed(): void {
+    this.enemySpecs = false;
   }
 
 }

@@ -13,7 +13,6 @@
         <ion-buttons slot="end" class="sack">
           {{ hero.sack.coin | coinDisplay }}
           <ion-icon slot="icon-only" name="wallet"></ion-icon>
-          ({{ hero.sack.items.length}})
         </ion-buttons>
         <ion-buttons class="hero" slot="end" (click)="openSpecs();">
           <app-hero-icon [hero]="hero"></app-hero-icon>

@@ -1,13 +1,14 @@
 import { Component, EventEmitter, HostBinding, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { IonModal } from '@ionic/angular';
 import { Bank } from '../../models';
+import { Sack } from '../../models/sack';
 
 @Component({
-  selector: 'app-bank-display',
-  templateUrl: './bank-display.component.html',
-  styleUrls: ['./bank-display.component.scss']
+  selector: 'app-storage-display',
+  templateUrl: './storage-display.component.html',
+  styleUrls: ['./storage-display.component.scss']
 })
-export class BankDisplayComponent implements OnInit, OnChanges {
+export class StorageDisplayComponent implements OnInit, OnChanges {
   @HostBinding('class.empty') public isEmpty = true;
   @HostBinding('class.broken') public notSet = true;
 
@@ -18,17 +19,7 @@ export class BankDisplayComponent implements OnInit, OnChanges {
   public bank?: Bank;
 
   @Input()
-  public depositable = 0n;
-
-  @Output()
-  public withDrawCash = new EventEmitter<bigint>();
-
-  @Output()
-  public depositCash = new EventEmitter<bigint>();
-
-  public isOpen = false;
-  public changeAmount = 0;
-  public maxAmt = 100;
+  public sack?: Sack;
 
   public isStorageOpen = false;
   public storageState: 'wallet' | 'bank' = 'bank';
@@ -48,40 +39,16 @@ export class BankDisplayComponent implements OnInit, OnChanges {
   ngOnInit(): void {
   }
 
-  onWillDismiss(e: Event):void {
-    this.isOpen = false;
-  }
-
   onStorageWillDismiss(e: Event): void {
     this.isStorageOpen = false;
-  }
-
-  addToBank(): void {
-    this.changeAmount = Number(this.depositable);
-    this.maxAmt = this.changeAmount;
-    this.isOpen = true;
-    this.msg = 'Deposit';
-  }
-
-  removeFromBank(): void {
-    this.isOpen = true;
-    this.changeAmount = Number(this.bank?.coin || 0)
-    this.maxAmt = this.changeAmount;
-    this.msg = 'Withdraw';
   }
 
   
   public confirm() {
     this.modal.dismiss(null, 'confirm');
-    if (this.msg === 'Deposit') {
-      this.depositCash.next(BigInt(this.changeAmount));
-    } else {
-      this.withDrawCash.next(BigInt(this.changeAmount));
-    }
   }
 
   public cancel() {
     this.modal.dismiss(null, 'cancel');
   }
-
 }

@@ -92,13 +92,17 @@ export class TownComponent implements OnInit, OnDestroy {
   public bankCoinChange(dir: 'w' | 'd', amt: bigint): void {
     if (this.activePlayer && this.bank) {
       if (dir === 'w') {
-        this.gameMec.addCoin(-1n * amt);
-        this.activePlayer.sack.coin += amt;
-        this.gameMec.updatePlayer(this.activePlayer);
+        if (this.bank.coin >= amt) {
+          this.gameMec.addCoin(-1n * amt);
+          this.activePlayer.sack.coin += amt;
+          this.gameMec.updatePlayer(this.activePlayer);
+        }
       } else {
-        this.gameMec.addCoin(amt);
-        this.activePlayer.sack.coin -= amt;
-        this.gameMec.updatePlayer(this.activePlayer);
+        if (this.activePlayer.sack.coin >= amt) {
+          this.gameMec.addCoin(amt);
+          this.activePlayer.sack.coin -= amt;
+          this.gameMec.updatePlayer(this.activePlayer);
+        }
       }
     }
   }

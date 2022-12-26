@@ -34,14 +34,18 @@ export function getExpBaseForLevel(level: number): bigint {
 export function levelUpPlayer(plr: Actor, newLevel?: number): Actor {
     const rtnHero = SysUtil.clone(plr);
     const nxtLvl = newLevel || plr.level + 1;
+    const levelDiff = Math.abs(plr.level - nxtLvl);
     // here we could check for items that incress on updates
     rtnHero.currentBreakpoint = getExpBaseForLevel(nxtLvl);
     rtnHero.nextBreakpoint = getExpBaseForLevel(nxtLvl + 1);
-    rtnHero.attack += 1;
-    rtnHero.defence += 1;
-    rtnHero.fullHealth += 20;
+    // user only updates now.
+    // rtnHero.attack += levelDiff;
+    // rtnHero.defence += levelDiff;
+    rtnHero.fullHealth += (5 * levelDiff);
     rtnHero.level = nxtLvl;
  
+    rtnHero.sack.limit += (10 * levelDiff);
+
     // add one point for user assigning
     if (!rtnHero.property) {
         rtnHero.property = {};
@@ -49,7 +53,7 @@ export function levelUpPlayer(plr: Actor, newLevel?: number): Actor {
     if (!rtnHero.property['assignable'] || Number.isNaN(rtnHero.property['assignable'])) {
         rtnHero.property['assignable'] = 0;
     }
-    rtnHero.property['assignable']++;
+    rtnHero.property['assignable'] += levelDiff;
     return rtnHero;
 }
 

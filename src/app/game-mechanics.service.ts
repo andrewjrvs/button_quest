@@ -42,7 +42,11 @@ export class GameMechanicsService {
 
     this._worker = new Worker(new URL('./game-mechanics.worker', import.meta.url));
   
-    this._worker.onmessage = ({ data }: {data: MessageResponse}) => {
+    this._worker.onmessage = ({ data }: { data: MessageResponse }) => {
+      if (data.requestType === MessageRequestType.LOGGER) {
+        console.log.apply(console, data.messages);
+        return;
+      }
       if (data.messages) {
         data.messages.forEach(m => {
           if (Array.isArray(m)) {

@@ -26,11 +26,11 @@ export class VillanFactoryService {
   }
 
   private calcAttack(lvl: number): number {
-    return SysUtil.getNormalDistRandomInt(Math.max(lvl - 10, 1), Math.max(lvl - 5), 2);
+    return SysUtil.getNormalDistRandomInt(Math.max(lvl - 10, 1), Math.max(Math.ceil(lvl  / 3) + 2, 2), -1);
   }
 
   private calcDefence(lvl: number): number {
-    return SysUtil.getNormalDistRandomInt(Math.max(lvl - 10, 0), Math.max(lvl -10, 0), 3);
+    return SysUtil.getNormalDistRandomInt(Math.max(lvl - 10, 0), Math.max(lvl - 10, 0), -1);
   }
 
   private calcCoin(lvl: number): bigint {
@@ -44,19 +44,41 @@ export class VillanFactoryService {
     }
     let itm: Item;
     const itemTypeCheck = SysUtil.getNormalDistRandomInt(1, 10, 3);
-    if (itemTypeCheck < 2) {
-      itm = this.itmFct.getHealthContainer('f')
-    } else if (itemTypeCheck < 4) {
-      itm = this.itmFct.getHealthContainer('s')
-    } else if (itemTypeCheck < 6) {
-      itm = this.itmFct.getHealthContainer('m')
-    } else if (itemTypeCheck < 8) {
-      itm = this.itmFct.getHealthContainer('s')
+    if (itemTypeCheck < 8) {
+      // itm = this.itmFct.getHealthContainer('s')
+      return [false, null];
     } else {
       itm = this.itmFct.generateImproveItem();
     }
     
     return [hasItem, itm];
+  }
+
+  private hasHealthItem(lvl: number): [boolean, Item | null, number] {
+    // 50% chance it's a health item...
+    const hasItem = SysUtil.getNormalDistRandomInt(1, 11) >= 6;
+    console.log('hasHealthItem', hasItem);
+
+    if (!hasItem) {
+      return [hasItem, null, 0];
+    }
+    const hlthOrdr: ('s' | 'm' | 'f')[] = ['s', 'm', 'f'];
+    let baseItem = 0;
+    if (lvl > 20) {
+      baseItem = 1;
+    }
+    let attHItem = baseItem;
+    let cnt = 1;
+    const itemTypeCheck = SysUtil.getNormalDistRandomInt(1, 100);
+    if (itemTypeCheck >= 80) {
+      attHItem = hlthOrdr.length - 1;
+    } else if (itemTypeCheck >= 50) {
+      attHItem++;
+    } else {
+      cnt = Math.max(Math.floor(itemTypeCheck / 20), 1);
+    }
+    console.log('Has Health', lvl, attHItem, cnt);
+    return [hasItem, this.itmFct.getHealthContainer(hlthOrdr[attHItem]), cnt];
   }
   private hasAttachedWeapon(): boolean {
     return SysUtil.getNormalDistRandomInt(1, 10) > 7;
@@ -85,6 +107,13 @@ export class VillanFactoryService {
     const [hasItm, itm] = this.hasAttachedItem();
     if (hasItm && itm) {
       rtn.sack.items.push(itm);
+    }
+    const [hasHlt, hItm, hCount] = this.hasHealthItem(vilLvl);  
+    if (hasHlt && hItm) {
+      for (var i = 1; i <= hCount; i++) {
+        var _itm = SysUtil.clone(hItm);
+        rtn.sack.items.push(_itm);
+      }
     }
 
     return rtn;

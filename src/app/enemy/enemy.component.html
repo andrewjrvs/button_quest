@@ -1,8 +1,12 @@
 Enemy health {{ enemy.health }}
 <div class="enemy-display-wrapper">
-    <app-display-icon [enemy]="enemy"></app-display-icon>
+    <ion-buttons class="enemy-button" (click)="openSpecs();">
+        <app-display-icon [enemy]="enemy"></app-display-icon>
+    </ion-buttons>
     <div class="stats-wrapper">
 
         <app-progress-bar [value]="enemy.health" [max]="enemy.fullHealth" [min]="0"></app-progress-bar>
     </div>
 </div>
+
+<app-spec-popup [enemy]="enemy" [isOpen]="enemySpecs" (dismissed)="specDismissed();" ></app-spec-popup>

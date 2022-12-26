@@ -7,12 +7,16 @@
                     <ion-button expand="block" (click)="rest();">Rest</ion-button>
                 </ion-card-content>
             </ion-card>
-            <ion-card class="bank" *ngIf="bank$ | async bank">
+            <ng-container *ngIf="bank$ | async bank">
+            <ion-card class="bank" >
                 <app-bank-display [bank]="bank" [depositable]="activePlayer.sack.coin"
                 (withDrawCash)="bankCoinChange('w', $event);"
                 (depositCash)="bankCoinChange('d', $event);"></app-bank-display>
             </ion-card>
-
+            <ion-card class="storage" >
+                <app-storage-display [bank]="bank" [sack]="activePlayer.sack" ></app-storage-display>
+            </ion-card>
+            </ng-container>
             <ion-card class="store">
 
                 <app-store #store [hero]="activePlayer" [level]="activePlayer.level" [bank]="bank$ | async"></app-store>

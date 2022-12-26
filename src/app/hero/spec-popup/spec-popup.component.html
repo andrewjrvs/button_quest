@@ -36,6 +36,10 @@
                     <ion-note slot="end">{{hero.property!['assignable']}}</ion-note>
                 </ion-item>
                 <ion-item>
+                    <ion-label>Level</ion-label>
+                    <ion-note slot="end">{{hero.level}}</ion-note>
+                </ion-item>
+                <ion-item>
                     <ion-label>Attack</ion-label>
                     <ion-buttons slot="end" *ngIf="hero.property && hero.property!['assignable'] && hero.property!['assignable'] > 0">
                         <ion-button (click)="changeProperty('+', 'a')">

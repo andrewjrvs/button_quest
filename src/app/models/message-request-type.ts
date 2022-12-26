@@ -4,4 +4,5 @@ export enum MessageRequestType {
     , LEVELUP = 'levelup'
     , DEATH = 'death'
     , ITEM = 'item'
+    , LOGGER = 'logger'
 }

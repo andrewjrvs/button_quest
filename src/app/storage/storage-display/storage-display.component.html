@@ -1,0 +1,42 @@
+<ion-card-header class="hdr">
+    <div class="image"></div>
+    <ion-card-title>Storage</ion-card-title>
+</ion-card-header>
+
+<ion-item-group *ngIf="bank">
+    <ion-item>
+        <app-coin-icon></app-coin-icon> {{ bank.coin }}
+
+        <ion-buttons slot="end">
+            <ion-button (click)="isStorageOpen = true;" >
+                <ion-icon slot="icon-only" name="bag-outline"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+    </ion-item>
+    <ion-item *ngFor="let itm of bank.items">
+        <app-item-icon [item]="itm"></app-item-icon> {{ itm.key }}
+    </ion-item>
+
+</ion-item-group>
+
+<ion-modal [isOpen]="isStorageOpen" (willDismiss)="onStorageWillDismiss($event)">
+    <ng-template>
+        <ion-header>
+            <ion-toolbar>
+                <ion-buttons slot="start">
+                    <ion-button (click)="cancel()">Close</ion-button>
+                </ion-buttons>
+                <ion-title> <app-coin-icon></app-coin-icon> Storage</ion-title>
+            </ion-toolbar>
+        </ion-header>
+        <ion-content *ngIf="sack">
+            <ion-item *ngFor="let itm of sack.items">
+                <app-item-icon [item]="itm"></app-item-icon>
+                <ion-label>{{itm.key}}</ion-label>
+                <ion-button slot="end"> to Storage </ion-button>
+            </ion-item>
+        </ion-content>
+    </ng-template>
+</ion-modal>
+
+

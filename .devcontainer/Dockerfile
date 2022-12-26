@@ -26,6 +26,18 @@ ARG SDK_URL="https://dl.google.com/android/repository/commandlinetools-linux-${A
 ENV ANDROID_HOME="/usr/local/android-sdk" \
     ANDROID_SDK=$ANDROID_HOME
 
+RUN echo "****************************"
+RUN echo "****************************"
+RUN echo "****************************"
+
+RUN echo "$JAVA_HOME"
+
+RUN echo "****************************"
+RUN echo "****************************"
+RUN echo "****************************"
+
+ENV JAVA_HOME /usr/lib/jvm/msopenjdk-current
+
 ## Download Android SDK
 RUN mkdir "$ANDROID_HOME" .android \
     && cd "$ANDROID_HOME" \

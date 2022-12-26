@@ -6,6 +6,13 @@ import * as FightUtil from './utils/fight-utils';
 import * as LvlUtil from './utils/leveling-util';
 import { Sack } from './models/sack';
 
+function logger(...args: any[]): void {
+  postMessage({
+    requestType: MessageRequestType.LOGGER,
+    messages: args
+  } as MessageResponse);
+}
+
 function processRest(primaryList: Actor[], sack: Sack | undefined, bank: Sack | undefined,  isForce: boolean = false): { rsp: Actor[], sack: Sack | undefined, bank: Sack | undefined, messages: string[] } {
   const fullCoin = 0n + (sack?.coin || 0n) + (bank?.coin || 0n);
   const rplyPrimaryLst: Actor[] = [];
@@ -17,14 +24,14 @@ function processRest(primaryList: Actor[], sack: Sack | undefined, bank: Sack | 
   // Currently only works on Person 1
   let heal_amount = primaryList[0].fullHealth - primaryList[0].health;
   
-  let heal_cost = BigInt(heal_amount);
+  let heal_cost = BigInt(20); // healing will only cost 20 now.
   let okToHeal = isForce;
   
   if (!isForce) {
     if (fullCoin < heal_cost) {
       messages.push(`Not enough money to fully heal.`);
-      heal_amount = Number(fullCoin);
-      heal_cost = fullCoin;
+      // heal_amount = Number(fullCoin);
+      // heal_cost = fullCoin;
     }
     
     if (rplySack) {
@@ -141,20 +148,21 @@ addEventListener('message', ({ data }: { data: MessageRequest }) => {
       // for now we are going to use the first items of both the primary 
       // and secondary...
       let _acct = { ...data.data.primary[0] };
-      const _defender = FightUtil.processFight(_acct, data.data.secondary![0])
+      const _defender = FightUtil.processFight(_acct, data.data.secondary![0], logger);
 
       // check if the defender is dead... if not they fight back
       if (!ActorUtil.isActorDead(_defender)) {
-        _acct = FightUtil.processFight(_defender, _acct);
+        _acct = FightUtil.processFight(_defender, _acct, logger);
       } else {
 
         // I'm debating where the 'experience' / after fight happens...
         // for now we will do it here...
-        _acct.experience += LvlUtil.calculateChallengeExperience(_acct, _defender);
-        console.log('checking exp', _acct.experience, data.data.primary[0].experience, _acct.experience > data.data.primary[0].experience);
+        const gainedExp = LvlUtil.calculateChallengeExperience(_acct, _defender);
+        _acct.experience += gainedExp;
+        logger(`DEFEATED: user defeated ${_defender.name} - and gained ${gainedExp}`);
+        
         if (_acct.experience > data.data.primary[0].experience) {
           const nxtlvl = LvlUtil.findLevelFromExperience(_acct.experience);
-          console.log('running exp', _acct.experience, _acct.level, nxtlvl)
           if (_acct.level != nxtlvl) {
             _acct = LvlUtil.levelUpPlayer(_acct, nxtlvl);
           }
@@ -162,6 +170,8 @@ addEventListener('message', ({ data }: { data: MessageRequest }) => {
 
         // get's the content from the players bag...
         _acct.sack.coin += _defender.sack.coin;
+        logger(`DEFEATED: user gailed ${_defender.sack.coin}`);
+        _defender.sack.coin = 0n;
 
         // get items from attach
         if (_acct.sack.limit >= _acct.sack.items.length + _defender.attached.length) {

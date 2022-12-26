@@ -1,0 +1,25 @@
+<ion-modal [isOpen]="isOpen" (willDismiss)="onWillDismiss($event)">
+    <ng-template>
+        <ion-header>
+            <ion-toolbar>
+                <ion-buttons slot="start">
+                    <ion-button (click)="cancel()">Close</ion-button>
+                </ion-buttons>
+                <ion-title>Enemy Specs</ion-title>
+            </ion-toolbar>
+        </ion-header>
+        <ion-content class="ion-padding">
+            <app-enemy-detail [enemy]="enemy"></app-enemy-detail>
+            <ng-container *ngIf="enemy?.sack as sack">
+                <ion-item>
+                    Coin: {{sack.coin}}
+                </ion-item>
+                <ion-item *ngFor="let itm of sack.items">
+                    <app-item-icon [item]="itm"></app-item-icon>
+                    <ion-label>{{itm.key}}</ion-label>
+                </ion-item>
+            </ng-container>
+        </ion-content>
+
+    </ng-template>
+</ion-modal>
